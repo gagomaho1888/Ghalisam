@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mot de passe réinitialisé - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <style>
+        .success-icon {
+            width: 80px; height: 80px;
+            background: #00d2ff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px; color: #111;
+        }
+    </style>
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="auth-container">
+    <h1>Mot de passe réinitialisé</h1>
+
+    <div class="success-icon">&#10003;</div>
+
+    <p style="text-align:center; color:#555; margin-bottom:20px;">
+        Votre mot de passe a été modifié avec succès.<br>
+        Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.
+    </p>
+
+    <a href="{% url 'connexion' %}" class="secondary-btn" style="display:block; text-align:center; margin-top:16px;">
+        Se connecter
+    </a>
+</div>
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

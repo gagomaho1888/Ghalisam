@@ -1,0 +1,275 @@
+{% extends 'Articles/base.html' %}
+{% load static %}
+{% load article_extras %}
+
+{% block title %}{{ article.nom }} - Galisham Boutique{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/produit_detail.css' %}">
+<link rel="stylesheet" href="{% static 'css/reviews.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% if message %}
+<div class="message-warning">{{ message }}</div>
+{% endif %}
+
+<div class="detail-container">
+    <div class="image-card">
+        {% if article.image %}
+            <img src="{{ article.image.url }}" alt="{{ article.nom }}">
+        {% else %}
+            <img src="https://via.placeholder.com/650x450?text=Produit+MonShop" alt="Produit">
+        {% endif %}
+    </div>
+    <div class="details-card">
+        <h1>{{ article.nom }}</h1>
+        <p class="categorie-badge">{{ article.get_categorie_display }}</p>
+        {% if article.variantes.all %}
+            <div class="variant-list">
+                {% for variant in article.variantes.all %}
+                    <span class="variant-item {% if variant.stock <= 0 %}out{% elif variant.stock <= 5 %}low{% else %}in{% endif %}">
+                        {{ variant.get_taille_display }} : {% if variant.stock <= 0 %}Indisponible{% elif variant.stock <= 5 %}Stock limité{% else %}{{ variant.stock }}{% endif %}
+                    </span>
+                {% endfor %}
+            </div>
+            {% if available_variants.exists %}
+                <form method="post" action="{% url 'add_to_cart' %}" class="add-form">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <label for="size-select">Taille</label>
+                        <select id="size-select" name="size" class="size-select">
+                            {% for variant in article.variantes.all %}
+                                <option value="{{ variant.taille }}" {% if variant.stock <= 0 %}disabled{% endif %}>
+                                    {{ variant.get_taille_display }} — {% if variant.stock <= 0 %}Indisponible{% elif variant.stock <= 5 %}Stock limité{% else %}{{ variant.stock }} en stock{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <input type="hidden" name="article_id" value="{{ article.id }}">
+                    <div class="form-row">
+                        <label for="qty-input">Quantité</label>
+                        <input type="number" id="qty-input" name="quantity" value="1" min="1" class="qty-input">
+                    </div>
+                    <button class="add-btn" type="submit">Ajouter au panier</button>
+                </form>
+            {% else %}
+                <p class="out-of-stock">Ce produit est épuisé.</p>
+            {% endif %}
+        {% else %}
+            <p class="meta">Taille: {{ article.get_taille_display }}</p>
+            <p class="meta">Stock: {% if article.stock <= 0 %}Indisponible{% elif article.stock <= 5 %}Stock limité{% else %}{{ article.stock }}{% endif %}</p>
+        {% endif %}
+        <p class="price">{{ article.prix|price_fr }} FCFA</p>
+        <p class="description">{{ article.description }}</p>
+        <p class="meta">Marque: {{ article.marque }}</p>
+        <a class="back-link" href="{% url 'produit_list' %}">← Retour aux produits</a>
+    </div>
+</div>
+
+<!-- ===== REVIEWS SECTION ===== -->
+<div class="reviews-section">
+    <!-- Header / Stats -->
+    <div class="reviews-header">
+        <h2>Avis clients</h2>
+        <div class="reviews-summary">
+            <div class="reviews-average">
+                {% if stats.total > 0 %}
+                    <span class="big-stars">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= stats.avg_rating|floatformat:"0"|add:"0" %}★{% else %}☆{% endif %}
+                        {% endfor %}
+                    </span>
+                    <span class="avg-number">{{ stats.avg_rating }}</span>
+                    <span class="reviews-count">/ 5 — Basé sur {{ stats.total }} avis</span>
+                {% else %}
+                    <span class="reviews-count">Aucun avis pour le moment</span>
+                {% endif %}
+            </div>
+            {% if stats.total > 0 %}
+            <div class="reviews-distribution">
+                {% for item in stats.distribution %}
+                <div class="dist-row">
+                    <span class="star-label">{{ item.stars }}★</span>
+                    <div class="dist-bar-track">
+                        <div class="dist-bar-fill" data-pct="{{ item.pct }}"></div>
+                    </div>
+                    <span class="dist-pct">{{ item.pct }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Review Form / Not-allowed message -->
+    {% if user.is_authenticated %}
+        {% if can_review %}
+            {% if existing_review %}
+                <!-- Edit existing -->
+                <div class="review-card">
+                    <div class="review-card-header">
+                        <div class="review-avatar">{{ user.first_name|default:user.username|first|upper }}</div>
+                        <div class="review-meta">
+                            <span class="review-user-name">{{ user.username }}
+                                {% if existing_review.achat_verifie %}<span class="review-badge">✓ Achat vérifié</span>{% endif %}
+                            </span>
+                            <div>
+                                <span class="review-stars">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= existing_review.rating %}★{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="review-date">{{ existing_review.created_at|date:"d/m/Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-comment">{{ existing_review.comment }}</p>
+                    {% if existing_review.image %}
+                        <img src="{{ existing_review.image.url }}" alt="Photo avis" class="review-image-display" onclick="window.open(this.src)">
+                    {% endif %}
+                    <div class="review-actions">
+                        <button class="review-action-btn edit-review-btn" data-review-id="{{ existing_review.id }}">Modifier</button>
+                        <form method="post" action="{% url 'delete_review' review_id=existing_review.id %}" style="display:inline">
+                            {% csrf_token %}
+                            <button class="review-action-btn danger delete-review-btn" type="submit">Supprimer</button>
+                        </form>
+                    </div>
+                    <!-- Edit Form (hidden) -->
+                    <div class="edit-review-form" id="edit-review-form-{{ existing_review.id }}">
+                        <form method="post" action="{% url 'edit_review' review_id=existing_review.id %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="star-rating-input">
+                                {% for i in "54321"|make_list %}
+                                    <input type="radio" name="rating" value="{{ i }}" id="edit-star-{{ i }}" {% if existing_review.rating|stringformat:"i" == i %}checked{% endif %}>
+                                    <label for="edit-star-{{ i }}" data-value="{{ i }}">★</label>
+                                {% endfor %}
+                            </div>
+                            <textarea name="comment" class="review-textarea" rows="4" placeholder="Modifiez votre avis...">{{ existing_review.comment }}</textarea>
+                            <div class="review-image-upload">
+                                <label for="edit-image-{{ existing_review.id }}">
+                                    📷 Changer la photo
+                                </label>
+                                <input type="file" name="image" id="edit-image-{{ existing_review.id }}" class="review-image-input" accept="image/*">
+                            </div>
+                            <button type="submit" class="review-submit-btn">Mettre à jour</button>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <!-- New review form -->
+                <div class="review-form-container">
+                    <h3>Donnez votre avis</h3>
+                    <form method="post" action="{% url 'add_review' article_id=article.id %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="star-rating-input">
+                            {% for i in "54321"|make_list %}
+                                <input type="radio" name="rating" value="{{ i }}" id="star-{{ i }}">
+                                <label for="star-{{ i }}" data-value="{{ i }}">★</label>
+                            {% endfor %}
+                        </div>
+                        <textarea name="comment" class="review-textarea" rows="4" placeholder="Partagez votre expérience avec ce produit..."></textarea>
+                        <div class="review-image-upload">
+                            <label for="review-image">
+                                📷 Ajouter une photo
+                            </label>
+                            <input type="file" name="image" id="review-image" class="review-image-input" accept="image/*">
+                            <span class="file-name"></span>
+                        </div>
+                        <img class="review-image-preview" alt="Aperçu">
+                        <button type="submit" class="review-submit-btn">Publier mon avis</button>
+                    </form>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="review-not-allowed">
+                <p>📦 Vous pourrez laisser un avis lorsque votre commande aura été livrée.</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="review-not-allowed">
+            <p><a href="{% url 'connexion' %}" style="color:#3b82f6;font-weight:600;">Connectez-vous</a> pour laisser un avis.</p>
+        </div>
+    {% endif %}
+
+    <!-- Reviews List -->
+    <div class="reviews-list">
+        {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-card-header">
+                    <div class="review-avatar">{{ review.user.first_name|default:review.user.username|first|upper }}</div>
+                    <div class="review-meta">
+                        <span class="review-user-name">{{ review.user.username }}
+                            {% if review.achat_verifie %}<span class="review-badge">✓ Achat vérifié</span>{% endif %}
+                        </span>
+                        <div>
+                            <span class="review-stars">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                            </span>
+                            <span class="review-date">{{ review.created_at|date:"d/m/Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="review-comment">{{ review.comment }}</p>
+                {% if review.image %}
+                    <img src="{{ review.image.url }}" alt="Photo avis" class="review-image-display" onclick="window.open(this.src)">
+                {% endif %}
+                {% if review.seller_response %}
+                <div class="seller-response">
+                    <strong>Réponse du vendeur</strong>
+                    <p>{{ review.seller_response }}</p>
+                </div>
+                {% endif %}
+                {% if user.is_authenticated and review.user == user %}
+                <div class="review-actions">
+                    <button class="review-action-btn edit-review-btn" data-review-id="{{ review.id }}">Modifier</button>
+                    <form method="post" action="{% url 'delete_review' review_id=review.id %}" style="display:inline">
+                        {% csrf_token %}
+                        <button class="review-action-btn danger delete-review-btn" type="submit">Supprimer</button>
+                    </form>
+                </div>
+                <div class="edit-review-form" id="edit-review-form-{{ review.id }}">
+                    <form method="post" action="{% url 'edit_review' review_id=review.id %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="star-rating-input">
+                            {% for i in "54321"|make_list %}
+                                <input type="radio" name="rating" value="{{ i }}" id="edit-star-{{ review.id }}-{{ i }}" {% if review.rating|stringformat:"i" == i %}checked{% endif %}>
+                                <label for="edit-star-{{ review.id }}-{{ i }}" data-value="{{ i }}">★</label>
+                            {% endfor %}
+                        </div>
+                        <textarea name="comment" class="review-textarea" rows="4" placeholder="Modifiez votre avis...">{{ review.comment }}</textarea>
+                        <div class="review-image-upload">
+                            <label for="edit-image-{{ review.id }}">📷 Changer la photo</label>
+                            <input type="file" name="image" id="edit-image-{{ review.id }}" class="review-image-input" accept="image/*">
+                        </div>
+                        <button type="submit" class="review-submit-btn">Mettre à jour</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <div class="reviews-empty">
+                <p>Aucun avis pour le moment.</p>
+                <p>Soyez le premier à donner votre avis !</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if reviews.has_next %}
+    <div class="reviews-load-more">
+        <button class="load-more-btn" data-next-page="{{ reviews.next_page_number }}" data-article-id="{{ article.id }}">
+            Voir plus d'avis
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/reviews.js' %}"></script>
+{% endblock %}
+

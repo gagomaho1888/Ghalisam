@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentions Légales - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <style>
+        .legal-hero {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .legal-hero h1 { margin: 0; font-size: 32px; }
+        .legal-hero p { margin-top: 10px; opacity: 0.9; }
+        .legal-content {
+            width: min(800px, 92%);
+            margin: 50px auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            padding: 45px;
+            line-height: 1.8;
+            color: #333;
+        }
+        .legal-content h2 { font-size: 20px; color: #111; margin: 30px 0 12px; }
+        .legal-content h2:first-child { margin-top: 0; }
+        .legal-content p { margin: 10px 0; font-size: 15px; }
+        .legal-content ul { margin: 10px 0 10px 20px; }
+        .legal-content li { margin: 6px 0; font-size: 15px; }
+        .legal-content strong { color: #111; }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="legal-hero">
+    <h1>Mentions Légales</h1>
+    <p>Dernière mise à jour : Juillet 2026</p>
+</div>
+
+<div class="legal-content">
+    <h2>1. Éditeur du site</h2>
+    <p>Le site <strong>Galisham Boutique</strong> est édité par :</p>
+    <ul>
+        <li><strong>Dénomination sociale :</strong> Galisham Boutique</li>
+        <li><strong>Forme juridique :</strong> Entreprise individuelle</li>
+        <li><strong>Siège social :</strong> Abidjan, Côte d'Ivoire</li>
+        <li><strong>Email :</strong> gagomaho18@gmail.com</li>
+        <li><strong>Téléphone :</strong> +225 01 61 27 40 83</li>
+    </ul>
+
+    <h2>2. Directeur de la publication</h2>
+    <p>Le directeur de la publication est le représentant légal de Galisham Boutique.</p>
+
+    <h2>3. Hébergeur</h2>
+    <p>Le site est hébergé par :</p>
+    <ul>
+        <li><strong>Hébergeur :</strong> [Nom de l'hébergeur]</li>
+        <li><strong>Adresse :</strong> [Adresse de l'hébergeur]</li>
+        <li><strong>Téléphone :</strong> [Téléphone de l'hébergeur]</li>
+    </ul>
+
+    <h2>4. Données personnelles</h2>
+    <p>Les informations personnelles collectées sur le Site (nom, email, adresse, téléphone) sont exclusivement destinées à Galisham Boutique pour le traitement de vos commandes et l'amélioration de nos services.</p>
+    <p>Conformément à la loi, vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles en nous contactant à <strong>gagomaho18@gmail.com</strong>.</p>
+
+    <h2>5. Propriété intellectuelle</h2>
+    <p>L'ensemble du contenu du Site (textes, images, logos, vidéos, graphismes) est la propriété exclusive de Galisham Boutique ou de ses partenaires et est protégé par les lois relatives à la propriété intellectuelle. Toute reproduction, représentation, modification ou adaptation, totale ou partielle, est interdite sans autorisation préalable.</p>
+
+    <h2>6. Cookies</h2>
+    <p>Le Site utilise des cookies pour assurer son bon fonctionnement et améliorer l'expérience utilisateur. Pour plus d'informations, consultez notre <strong><a href="{% url 'cookies' %}" style="color:#3a7bd5;">Politique de Cookies</a></strong>.</p>
+
+    <h2>7. Contact</h2>
+    <p>Pour toute question relative aux mentions légales, vous pouvez nous contacter :</p>
+    <ul>
+        <li>Par email : <strong>gagomaho18@gmail.com</strong></li>
+        <li>Par WhatsApp : <strong>+225 01 61 27 40 83</strong></li>
+        <li>Via la page <strong><a href="{% url 'contact' %}" style="color:#3a7bd5;">Contact</a></strong></li>
+    </ul>
+</div>
+
+{% include 'Articles/footer.html' %}
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

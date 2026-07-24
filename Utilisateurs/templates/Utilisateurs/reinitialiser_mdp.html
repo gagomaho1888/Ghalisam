@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réinitialiser le mot de passe - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="auth-container">
+    <h1>Réinitialiser le mot de passe</h1>
+
+    {% if error %}
+    <div class="message">{{ error }}</div>
+    {% endif %}
+
+    {% if step == "code" %}
+    <p style="text-align:center; color:#555; margin-bottom:20px;">
+        Un code a été envoyé à <strong>{{ email }}</strong>.
+        Entrez-le ci-dessous.
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <label for="code">Code de vérification</label>
+        <input type="text" id="code" name="code" placeholder="000000" maxlength="6"
+               pattern="[0-9]{6}" inputmode="numeric" required
+               style="text-align:center; font-size:24px; letter-spacing:8px;">
+        <button type="submit">Vérifier le code</button>
+    </form>
+
+    {% elif step == "new_password" %}
+    <p style="text-align:center; color:#555; margin-bottom:20px;">
+        Code vérifié ! Entrez votre nouveau mot de passe.
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <label for="password">Nouveau mot de passe</label>
+        <input type="password" id="password" name="password" placeholder="Nouveau mot de passe" required>
+
+        <label for="password2">Confirmer le mot de passe</label>
+        <input type="password" id="password2" name="password2" placeholder="Confirmez le mot de passe" required>
+
+        <button type="submit">Réinitialiser</button>
+    </form>
+    {% endif %}
+
+    <div class="link-row">
+        <a href="{% url 'connexion' %}" class="secondary-btn">Retour à la connexion</a>
+    </div>
+</div>
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

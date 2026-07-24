@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue - Galisham Boutique</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #16213e 100%);
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        .logo-text {
+            font-size: 52px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: #00d2ff;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: slideUp 0.8s ease 0.3s forwards;
+            text-shadow: 0 0 30px rgba(0, 210, 255, 0.4);
+        }
+
+        .welcome-line {
+            width: 60px;
+            height: 3px;
+            background: #00d2ff;
+            margin: 20px 0;
+            border-radius: 2px;
+            opacity: 0;
+            animation: expandLine 0.6s ease 0.8s forwards;
+        }
+
+        .welcome-msg {
+            font-size: 22px;
+            color: #ccc;
+            font-weight: 300;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: slideUp 0.8s ease 1.0s forwards;
+        }
+
+        .username {
+            font-size: 18px;
+            color: #00d2ff;
+            margin-top: 30px;
+            opacity: 0;
+            animation: slideUp 0.8s ease 1.3s forwards;
+            letter-spacing: 2px;
+        }
+
+        .spinner {
+            margin-top: 50px;
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(0, 210, 255, 0.15);
+            border-top-color: #00d2ff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: spin 0.8s linear infinite, fadeIn 0.5s ease 1.8s forwards;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00d2ff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatUp 3s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-delay: 0.2s; }
+        .particle:nth-child(2) { left: 25%; animation-delay: 0.8s; }
+        .particle:nth-child(3) { left: 40%; animation-delay: 0.4s; }
+        .particle:nth-child(4) { left: 55%; animation-delay: 1.0s; }
+        .particle:nth-child(5) { left: 70%; animation-delay: 0.6s; }
+        .particle:nth-child(6) { left: 85%; animation-delay: 1.2s; }
+        .particle:nth-child(7) { left: 15%; animation-delay: 1.5s; }
+        .particle:nth-child(8) { left: 60%; animation-delay: 0.3s; }
+
+        .welcome-screen .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes expandLine {
+            from { opacity: 0; width: 0; }
+            to { opacity: 1; width: 60px; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes floatUp {
+            0%   { opacity: 0; transform: translateY(100vh) scale(0); }
+            30%  { opacity: 0.6; }
+            100% { opacity: 0; transform: translateY(-20vh) scale(1); }
+        }
+
+        .exit {
+            animation: fadeOut 0.5s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+</div>
+
+<div class="welcome-screen" id="welcome">
+    <div class="content">
+        <div class="logo-text">Galisham</div>
+        <div class="welcome-line"></div>
+        <div class="welcome-msg">Bienvenue</div>
+        <div class="username">{{ prenom }}</div>
+        <div class="spinner"></div>
+    </div>
+</div>
+
+<script>
+    setTimeout(function() {
+        document.getElementById('welcome').classList.add('exit');
+    }, 3000);
+
+    setTimeout(function() {
+        window.location.href = "{% url 'acceuil' %}";
+    }, 3500);
+</script>
+
+</body>
+</html>

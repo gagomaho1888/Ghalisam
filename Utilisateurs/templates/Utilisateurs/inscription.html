@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="auth-container">
+    <h1>Inscription</h1>
+    {% if error %}
+    <div class="message">{{ error }}</div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <label for="username">Nom d'utilisateur</label>
+        <input type="text" id="username" name="username" placeholder="coraline" required>
+
+        <label for="nom">Nom</label>
+        <input type="text" id="nom" name="nom" placeholder="Votre nom de famille" required>
+
+        <label for="prenom">Prénom</label>
+        <input type="text" id="prenom" name="prenom" placeholder="Votre prénom" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Votre adresse email" required>
+
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" name="password" placeholder="Mot de passe" required>
+
+        <label for="password2">Confirmation du mot de passe</label>
+        <input type="password" id="password2" name="password2" placeholder="Confirmez le mot de passe" required>
+
+        <button type="submit">Créer mon compte</button>
+    </form>
+
+    <div class="link-row">
+        <a href="{% url 'connexion' %}" class="secondary-btn">J'ai déjà un compte</a>
+    </div>
+</div>
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

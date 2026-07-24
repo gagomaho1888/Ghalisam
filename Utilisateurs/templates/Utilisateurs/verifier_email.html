@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification email - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="auth-container">
+    <h1>Vérification email</h1>
+    <p style="text-align:center; color:#555; margin-bottom:20px;">
+        Un code à 6 chiffres a été envoyé à <strong>{{ email }}</strong>.
+        Veuillez le ci-dessous pour valider votre compte.
+    </p>
+
+    {% if error %}
+    <div class="message">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="message" style="background:#e5fee5; color:#006600; border-color:#c5f3c5;">{{ success }}</div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="code">Code de vérification</label>
+        <input type="text" id="code" name="code" placeholder="000000" maxlength="6"
+               pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code" required
+               style="text-align:center; font-size:24px; letter-spacing:8px;">
+
+        <button type="submit">Vérifier</button>
+    </form>
+
+    <div class="link-row" style="justify-content:center; margin-top:16px;">
+        <a href="{% url 'resend_code' %}" class="secondary-btn" style="font-size:14px;">Renvoyer le code</a>
+    </div>
+</div>
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

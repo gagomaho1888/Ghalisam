@@ -1,0 +1,300 @@
+{% extends 'Articles/base.html' %}
+{% load static %}
+{% load article_extras %}
+
+{% block title %}Panier / Commande - Galisham Boutique{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="{% static 'css/commande.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <a href="{% url 'produit_list' %}" class="back-shop">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+            Continuer mes achats
+        </a>
+        <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-top:-3px;margin-right:6px"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            Votre panier
+        </h2>
+        {% if cart.cart|length == 0 %}
+            <p style="margin-top:20px;color:#555">Votre panier est vide.</p>
+        {% else %}
+            {% for item in cart %}
+            <div class="cart-item">
+                <div class="item-info">
+                    <strong>{{ item.name }}</strong>
+                    {% if item.size %}<span class="muted">Taille {{ item.size }}</span>{% endif %}
+                    <div class="muted">Prix unitaire : {{ item.price|price_fr }} FCFA</div>
+                </div>
+                <div class="cart-actions">
+                    {% if not is_guest %}
+                        <form method="post" action="{% url 'update_cart' %}">{% csrf_token %}<input type="hidden" name="key" value="{{ item.key }}"><input type="hidden" name="action" value="decrement"><button class="small" type="submit">−</button></form>
+                        <span style="padding:0 12px;font-weight:700">{{ item.quantity }}</span>
+                        <form method="post" action="{% url 'update_cart' %}">{% csrf_token %}<input type="hidden" name="key" value="{{ item.key }}"><input type="hidden" name="action" value="increment"><button class="small" type="submit">+</button></form>
+                        <form method="post" action="{% url 'update_cart' %}">{% csrf_token %}<input type="hidden" name="key" value="{{ item.key }}"><input type="hidden" name="action" value="remove"><button class="delete-btn" type="submit">Supprimer</button></form>
+                    {% else %}
+                        <span style="padding:0 12px;font-weight:700">{{ item.quantity }}</span>
+                        <span style="color:#999;font-size:12px">Connectez-vous pour modifier le panier.</span>
+                    {% endif %}
+                </div>
+                <div style="width:120px;text-align:right;font-weight:700">{{ item.subtotal|price_fr }} FCFA</div>
+            </div>
+            {% endfor %}
+            <div class="total-row" style="flex-direction:column;gap:8px;border:none;padding:0;margin-top:10px">
+                <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:400">
+                    <span>Sous-total</span>
+                    <span>{{ total|price_fr }} FCFA</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:400;color:#666">
+                    <span>Livraison</span>
+                    <span id="livraisonMontant">—</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:20px;font-weight:700;border-top:1px solid #eee;padding-top:12px">
+                    <span>Total</span>
+                    <span id="totalAvecLivraison">{{ total|price_fr }} FCFA</span>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <div class="card livraison-info">
+            <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                Informations de livraison
+            </h3>
+            <div class="livraison-box">
+                <div class="livraison-item"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Abidjan</span><strong>1 000 - 2 000 FCFA</strong></div>
+                <div class="livraison-item"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Hors d'Abidjan</span><strong>1 500 - 5 000 FCFA</strong></div>
+                <div class="livraison-item"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Étranger</span><strong>5 000 FCFA</strong></div>
+            </div>
+
+            <div style="margin-top:16px;padding:14px;background:rgba(255,255,255,0.12);border-radius:12px">
+                <p style="font-weight:700;font-size:15px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Délai de livraison</p>
+                <p style="font-size:13px;margin-top:6px">Chaque livraison est effectuée sous <strong>3 jours ouvrés</strong> après validation de la commande et pour les pays exterieurs plus de 3 jours.</p>
+            </div>
+            <div style="margin-top:12px;padding:14px;background:rgba(255,255,255,0.12);border-radius:12px">
+                <p style="font-weight:700;font-size:15px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Service livreur</p>
+                <p style="font-size:13px;margin-top:6px">Nos livreurs vous contacteront par téléphone avant le passage. Assurez-vous d'avoir un numéro valide.</p>
+                <p style="font-size:13px;margin-top:4px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 12 12"/></svg> Passage entre <strong>8h et 19h</strong> du lundi au samedi.</p>
+                <p style="font-size:13px;margin-top:4px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/><circle cx="12" cy="12" r="4"/></svg> Paiement possible à la livraison (espèces, Mobile Money).</p>
+            </div>
+
+            <div style="margin-top:16px;padding:14px;background:rgba(255,255,255,0.12);border-radius:12px">
+                <p style="font-weight:700;font-size:15px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Géolocalisation
+                </p>
+                <input class="search-addr" id="addressSearch" placeholder="Rechercher votre adresse..." onkeyup="searchAddress(event)">
+                <div id="map"></div>
+                <button class="geo-btn" onclick="detectPosition()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Me localiser automatiquement
+                </button>
+                <div class="frais-calc">
+                    <p class="frais-label">Distance estimée</p>
+                    <p class="montant" id="distanceText">—</p>
+                    <p style="font-size:13px;margin-top:6px">Frais de livraison</p>
+                    <p class="montant" id="fraisText">— FCFA</p>
+                </div>
+            </div>
+            <p class="livraison-note" style="margin-top:12px">Les frais de livraison sont ajoutés au montant total lors de la validation.</p>
+        </div>
+
+        <div class="card">
+            <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                Informations du client
+            </h3>
+            {% if not is_guest %}
+                <form method="post" action="{% url 'commande' %}" class="delivery">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="checkout">
+                    <input type="hidden" name="lat" id="latInput" value="">
+                    <input type="hidden" name="lon" id="lonInput" value="">
+                    <label>Adresse precise (rue, quartier, ville)</label>
+                    <input type="text" name="ville" required placeholder="Ex: Rue 12, Cocody, Abidjan" value="{{ delivery.ville|default_if_none:'' }}">
+                    <label>Pays</label>
+                    <input type="hidden" name="pays" id="paysInput" value="{{ delivery.pays|default_if_none:'' }}">
+                    <input type="text" id="paysDisplay" readonly value="{{ delivery.pays|default_if_none:'Détecté automatiquement' }}" style="background:rgba(255,255,255,0.5);color:#555;font-style:italic">
+                    <label>Code postal</label>
+                    <input type="text" name="code_postal" placeholder="Ex: 00225" value="{{ delivery.code_postal|default_if_none:'' }}">
+                    <label>Téléphone</label>
+                    <input type="tel" name="telephone" required placeholder="+225 XX XX XX XX" value="{{ delivery.telephone|default_if_none:'' }}">
+                    <button class="checkout-btn" type="submit" onclick="return validerLivraison()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+                        Valider la commande
+                    </button>
+                </form>
+            {% else %}
+                <p style="margin-top:16px;color:#333;font-weight:700">Mode invité : vous pouvez regarder les produits, mais vous devez vous connecter pour commander.</p>
+                <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+                    <a class="checkout-btn" href="{% url 'connexion' %}" style="display:inline-flex;justify-content:center;align-items:center;text-decoration:none">Se connecter</a>
+                    <a class="checkout-btn" href="{% url 'register' %}" style="display:inline-flex;justify-content:center;align-items:center;text-decoration:none">S'inscrire</a>
+                </div>
+            {% endif %}
+            {% if message %}<p class="message">{{ message }}</p>{% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<script>
+(function() {
+    var SHOP = { lat: 5.3600, lng: -4.0083 };
+    var map = null, marker = null;
+    var total = {{ total|stringformat:".2f" }};
+
+    function getEl(id) { return document.getElementById(id); }
+
+    function afficherFrais(dist, montant) {
+        var el;
+        getEl('distanceText').textContent = dist ? dist.toFixed(1) + ' km' : '—';
+        getEl('fraisText').textContent = montant.toLocaleString() + ' FCFA';
+        el = getEl('livraisonMontant');
+        if (el) el.textContent = montant.toLocaleString() + ' FCFA';
+        el = getEl('totalAvecLivraison');
+        if (el) el.textContent = (total + montant).toLocaleString() + ' FCFA';
+    }
+
+    function calculerDistance(lat, lon) {
+        var R = 6371;
+        var dLat = (lat - SHOP.lat) * Math.PI / 180;
+        var dLon = (lon - SHOP.lng) * Math.PI / 180;
+        var a = Math.sin(dLat/2) ** 2 + Math.cos(SHOP.lat * Math.PI / 180) * Math.cos(lat * Math.PI / 180) * Math.sin(dLon/2) ** 2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function fraisDepuisDistance(dist) {
+        if (dist <= 10) return 1000;
+        if (dist <= 50) return 1500;
+        if (dist <= 200) return 2500;
+        if (dist <= 500) return 4000;
+        return 5000;
+    }
+
+    function placerMarqueur(lat, lon, label) {
+        if (!map || typeof L === 'undefined') return;
+        try {
+            if (marker) map.removeLayer(marker);
+            var popup = label ? label.split(',')[0] : 'Votre adresse';
+            marker = L.marker([lat, lon]).addTo(map)
+                .bindPopup(popup).openPopup();
+            map.setView([lat, lon], 12);
+        } catch(e) {}
+    }
+
+    function positionner(lat, lon, label) {
+        var dist = calculerDistance(lat, lon);
+        afficherFrais(dist, fraisDepuisDistance(dist));
+        placerMarqueur(lat, lon, label);
+        var latInp = getEl('latInput');
+        var lonInp = getEl('lonInput');
+        if (latInp) latInp.value = lat;
+        if (lonInp) lonInp.value = lon;
+    }
+
+    function remplirFormulaire(data, label) {
+        if (!data && !label) return;
+        var inp = document.querySelector('input[name="ville"]');
+        if (!inp) return;
+        var addr = data && data.address || null;
+        var generic = ['country','state','continent','region','county'];
+        if (data.addresstype && generic.indexOf(data.addresstype) !== -1) {
+            alert('Veuillez entrer une ville ou une adresse precise (ex: Yopougon, Bingerville).');
+            return;
+        }
+        if (label) inp.value = label;
+        else if (addr) inp.value = addr.city || addr.town || addr.village || addr.road || addr.suburb || addr.county || addr.municipality || addr.state_district || '';
+        if (inp.value) inp.style.background = '#f0f0f0';
+        if (addr && addr.country) {
+            var pInp = document.getElementById('paysInput');
+            var pDsp = document.getElementById('paysDisplay');
+            if (pInp) pInp.value = addr.country;
+            if (pDsp) { pDsp.value = addr.country; pDsp.style.fontStyle = 'normal'; pDsp.style.color = '#0f172a'; }
+        }
+    }
+
+    function initCarte() {
+        if (typeof L === 'undefined' || map) return;
+        map = L.map('map').setView([SHOP.lat, SHOP.lng], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
+        L.marker([SHOP.lat, SHOP.lng]).addTo(map).bindPopup('MonShop - Abidjan');
+    }
+    if (document.readyState === 'complete') initCarte();
+    else window.addEventListener('load', initCarte);
+    setTimeout(initCarte, 2000);
+
+    window.detectPosition = function() {
+        if (!navigator.geolocation) { alert('Géolocalisation non supportée par votre navigateur.'); return; }
+        navigator.geolocation.getCurrentPosition(
+            function(p) {
+                var lat = p.coords.latitude, lon = p.coords.longitude;
+                positionner(lat, lon);
+                fetch('/api/geocode/reverse/?lat=' + lat + '&lon=' + lon)
+                    .then(function(r) { if (!r.ok) throw Error(); return r.json(); })
+                    .then(function(d) {
+                        if (d && d.display_name) {
+                            getEl('addressSearch').value = d.display_name.split(',')[0];
+                            positionner(lat, lon, d.display_name);
+                        }
+                        remplirFormulaire(d, d && d.display_name);
+                    })
+                    .catch(function() {});
+            },
+            function(err) {
+                var msg = 'Impossible de vous localiser.';
+                if (err.code === err.PERMISSION_DENIED) msg += ' Autorisation refusée. Vérifiez les paramètres de votre navigateur.';
+                else if (err.code === err.POSITION_UNAVAILABLE) msg += ' Position indisponible.';
+                else if (err.code === err.TIMEOUT) msg += ' Délai dépassé.';
+                if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') msg += ' La géolocalisation nécessite une connexion HTTPS.';
+                alert(msg + ' Utilisez la recherche ou la sélection de zone.');
+            }
+        );
+    };
+
+    var t0 = null;
+    window.searchAddress = function() {
+        clearTimeout(t0);
+        t0 = setTimeout(function() {
+            var q = getEl('addressSearch').value.trim();
+            if (q.length < 3) return;
+            fetch('/api/geocode/search/?q=' + encodeURIComponent(q))
+                .then(function(r) { if (!r.ok) throw Error(); return r.json(); })
+                .then(function(d) {
+                    if (d && d.length > 0) {
+                        var r = d[0];
+                        var generic = ['country','state','continent','region','county'];
+                        if (generic.indexOf(r.addresstype) !== -1) {
+                            alert('Veuillez entrer une ville ou une adresse precise (ex: Yopougon, Bingerville).');
+                            return;
+                        }
+                        positionner(parseFloat(r.lat), parseFloat(r.lon), r.display_name);
+                        remplirFormulaire(r, r.display_name);
+                    }
+                })
+                .catch(function() {});
+        }, 300);
+    };
+
+    window.validerLivraison = function() {
+        var latInp = getEl('latInput');
+        var lonInp = getEl('lonInput');
+        if (!latInp || !lonInp || !latInp.value || !lonInp.value) {
+            alert('Calculez vos frais de livraison avec la géolocalisation ou la recherche d\'adresse.');
+            return false;
+        }
+        var ville = document.querySelector('input[name="ville"]');
+        if (ville && ville.value.trim().split(',').length < 2) {
+            alert('Veuillez entrer une adresse precise (rue, quartier, ville).');
+            return false;
+        }
+        return true;
+    };
+})();
+</script>
+{% endblock %}

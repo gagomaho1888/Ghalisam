@@ -1,0 +1,18 @@
+[Unit]
+Description=Galisham Boutique (Daphne)
+After=network.target postgresql.service redis.service
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/path/to/ecommerce
+EnvironmentFile=/path/to/ecommerce/.env
+ExecStart=/path/to/ecommerce/.venv/bin/daphne \
+    -b 127.0.0.1 \
+    -p 8000 \
+    ecommerce.asgi:application
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

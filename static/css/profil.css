@@ -1,0 +1,64 @@
+.profile-container {
+    width: min(720px, 95%);
+    margin: 60px auto;
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    padding: 40px;
+}
+.profile-title {
+    margin-top: 0;
+    font-size: 28px;
+    color: #111;
+}
+.welcome {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 30px;
+}
+.profile-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.profile-item {
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 22px;
+    border: 1px solid #edf2f7;
+}
+.profile-item h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    color: #111;
+}
+.profile-item p {
+    margin: 0;
+    color: #555;
+    line-height: 1.6;
+}
+.profile-footer {
+    margin-top: 30px;
+    text-align: center;
+}
+.profile-footer a {
+    display: inline-block;
+    padding: 12px 20px;
+    background: #00d2ff;
+    color: #111;
+    text-decoration: none;
+    border-radius: 10px;
+}
+.statut-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.statut-en_attente          { background: #fef3c7; color: #92400e; }
+.statut-en_preparation      { background: #dbeafe; color: #1e40af; }
+.statut-en_livraison        { background: #e0e7ff; color: #3730a3; }
+.statut-livree              { background: #d1fae5; color: #065f46; }
+.statut-livraison_echouee   { background: #fee2e2; color: #991b1b; }

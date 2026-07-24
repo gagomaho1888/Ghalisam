@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Toutes les commandes</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+<div class="admin-wrapper">
+    <aside class="admin-sidebar">
+        <h3>Administration</h3>
+        <a href="{% url 'admin_dashboard' %}">Tableau de bord</a>
+        <a href="{% url 'toutes_commandes' %}" class="active">Commandes</a>
+        <a href="{% url 'gestion_livreurs' %}">Livreurs</a>
+        <a href="/admin/">Django Admin</a>
+        <a href="{% url 'acceuil' %}">Retour au site</a>
+    </aside>
+    <main class="admin-main">
+        <h1>Toutes les commandes</h1>
+        {% if messages %}
+        <div class="admin-messages">
+            {% for msg in messages %}
+            <div class="admin-alert {{ msg.tags }}">{{ msg }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="filtres">
+            <a href="{% url 'toutes_commandes' %}" class="filter-btn {% if not statut_selectionne %}active{% endif %}">Toutes</a>
+            <a href="{% url 'toutes_commandes' %}?statut=en_attente" class="filter-btn {% if statut_selectionne == 'en_attente' %}active{% endif %}">En attente</a>
+            <a href="{% url 'toutes_commandes' %}?statut=en_preparation" class="filter-btn {% if statut_selectionne == 'en_preparation' %}active{% endif %}">En préparation</a>
+            <a href="{% url 'toutes_commandes' %}?statut=en_livraison" class="filter-btn {% if statut_selectionne == 'en_livraison' %}active{% endif %}">En livraison</a>
+            <a href="{% url 'toutes_commandes' %}?statut=livree" class="filter-btn {% if statut_selectionne == 'livree' %}active{% endif %}">Livrée</a>
+            <a href="{% url 'toutes_commandes' %}?statut=livraison_echouee" class="filter-btn {% if statut_selectionne == 'livraison_echouee' %}active{% endif %}">Échouée</a>
+        </div>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Ticket</th>
+                    <th>Client</th>
+                    <th>Téléphone</th>
+                    <th>Ville</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                    <th>Livreur</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cmd in commandes %}
+                <tr>
+                    <td>{{ cmd.ticket }}</td>
+                    <td>{{ cmd.fullname|default:cmd.user.username }}</td>
+                    <td>{{ cmd.telephone|default:"—" }}</td>
+                    <td>{{ cmd.ville }}</td>
+                    <td>{{ cmd.total_price|floatformat:0 }} FCFA</td>
+                    <td><span class="status-badge status-{{ cmd.statut }}">{{ cmd.get_statut_display }}</span></td>
+                    <td>{% if cmd.livreur %}{{ cmd.livreur.username }}{% else %}<span class="muted">—</span>{% endif %}</td>
+                    <td>{{ cmd.created_at|date:"d/m/Y H:i" }}</td>
+                    <td><a href="{% url 'attribuer_commande' cmd.id %}" class="btn-sm">Attribuer</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="9" class="empty">Aucune commande.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            {% if commandes.has_previous %}
+                <a href="?page=1{% if statut_selectionne %}&statut={{ statut_selectionne }}{% endif %}" class="page-link">&laquo; Première</a>
+                <a href="?page={{ commandes.previous_page_number }}{% if statut_selectionne %}&statut={{ statut_selectionne }}{% endif %}" class="page-link">‹ Précédente</a>
+            {% endif %}
+            <span class="page-current">Page {{ commandes.number }} / {{ commandes.paginator.num_pages }}</span>
+            {% if commandes.has_next %}
+                <a href="?page={{ commandes.next_page_number }}{% if statut_selectionne %}&statut={{ statut_selectionne }}{% endif %}" class="page-link">Suivante ›</a>
+                <a href="?page={{ commandes.paginator.num_pages }}{% if statut_selectionne %}&statut={{ statut_selectionne }}{% endif %}" class="page-link">Dernière &raquo;</a>
+            {% endif %}
+        </div>
+    </main>
+</div>
+</body>
+</html>

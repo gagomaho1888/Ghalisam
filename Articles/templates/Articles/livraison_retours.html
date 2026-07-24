@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livraison & Retours - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <style>
+        .lr-hero {
+            background: linear-gradient(135deg, #111 0%, #1a1a2e 100%);
+            color: #fff;
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+        .lr-hero h1 { font-size: 32px; margin-bottom: 8px; }
+        .lr-hero p { color: #aaa; font-size: 16px; }
+        .lr-container {
+            max-width: 860px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .lr-section {
+            background: #fff;
+            border: 1px solid #edf2f7;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        .lr-section h2 {
+            font-size: 20px;
+            color: #111;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .lr-section h2 .lr-icon {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .lr-section h2 .lr-icon.blue { background: #eef2ff; }
+        .lr-section h2 .lr-icon.green { background: #e5faf0; }
+        .lr-section h2 .lr-icon.orange { background: #fef3c7; }
+        .lr-section h2 .lr-icon.red { background: #fee2e2; }
+        .lr-section h2 .lr-icon.purple { background: #f3e8ff; }
+        .lr-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .lr-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        @media (max-width: 600px) { .lr-grid { grid-template-columns: 1fr; } }
+        .lr-card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 18px;
+        }
+        .lr-card h3 {
+            font-size: 14px;
+            color: #111;
+            margin-bottom: 6px;
+        }
+        .lr-card p {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .lr-card .lr-highlight {
+            font-size: 22px;
+            font-weight: 800;
+            color: #3a7bd5;
+            margin-bottom: 4px;
+        }
+        .lr-steps {
+            counter-reset: step;
+            list-style: none;
+            padding: 0;
+        }
+        .lr-steps li {
+            counter-increment: step;
+            position: relative;
+            padding: 12px 0 12px 50px;
+            font-size: 14px;
+            color: #444;
+            border-bottom: 1px solid #f5f5f5;
+            line-height: 1.6;
+        }
+        .lr-steps li:last-child { border-bottom: none; }
+        .lr-steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0; top: 10px;
+            width: 32px; height: 32px;
+            background: #00d2ff;
+            color: #111;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .lr-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        .lr-table th {
+            background: #f1f5f9;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+            color: #333;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .lr-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+        }
+        .lr-table tr:last-child td { border-bottom: none; }
+        .lr-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .lr-badge-free { background: #e5faf0; color: #16a34a; }
+        .lr-badge-paid { background: #fef3c7; color: #92400e; }
+        .lr-note {
+            background: #eef2ff;
+            border-left: 4px solid #3a7bd5;
+            padding: 14px 18px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #333;
+            line-height: 1.6;
+        }
+        .lr-cta {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .lr-cta a {
+            display: inline-block;
+            background: #00d2ff;
+            color: #111;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .lr-cta a:hover {
+            background: #3a7bd5;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="lr-hero">
+    <h1>Livraison & Retours</h1>
+    <p>Tout ce que vous devez savoir sur la livraison et les retours</p>
+</div>
+
+<div class="lr-container">
+
+    <!-- LIVRAISON -->
+    <div class="lr-section">
+        <h2><span class="lr-icon blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a7bd5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span> Politique de livraison</h2>
+        <p class="lr-subtitle">Nous livrons partout en Côte d'Ivoire avec soin et rapidité.</p>
+
+        <div class="lr-grid">
+            <div class="lr-card">
+                <div class="lr-highlight">24 - 72h</div>
+                <h3>Délai de livraison</h3>
+                <p>Abidjan : 24h. Autres villes : 2 à 3 jours ouvrés après confirmation de la commande.</p>
+            </div>
+            <div class="lr-card">
+                <div class="lr-highlight">Gratuit*</div>
+                <h3>Livraison offerte</h3>
+                <p>Pour toute commande supérieure à 50 000 FCFA. *Sous conditions de zone.</p>
+            </div>
+            <div class="lr-card">
+                <div class="lr-highlight">Cash / MoMo</div>
+                <h3>Paiement à la livraison</h3>
+                <p>Payez en espèces ou par Mobile Money à la réception de votre colis.</p>
+            </div>
+            <div class="lr-card">
+                <div class="lr-highlight">Suivi</div>
+                <h3>Suivi en temps réel</h3>
+                <p>Suivez l'état de votre commande depuis votre espace client (Profil → Commandes).</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="lr-section">
+        <h2><span class="lr-icon green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span> Estimation des tarifs</h2>
+        <p class="lr-subtitle">Les frais varient selon la zone de livraison.</p>
+
+        <table class="lr-table">
+            <thead>
+                <tr>
+                    <th>Zone</th>
+                    <th>Délai</th>
+                    <th>Tarif</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Abidjan</strong> (toutes communes)</td>
+                    <td>1 à 3 jours</td>
+                    <td><span class="lr-badge lr-badge-paid">1 000 FCFA</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Grand Abidjan</strong> (Anyama, Bingerville, Songon)</td>
+                    <td>1 à 3 jours</td>
+                    <td><span class="lr-badge lr-badge-paid">1 500 FCFA</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Autres villes</strong> (Bouaké, Yamoussoukro, San-Pédro...)</td>
+                    <td>1 à 3 jours</td>
+                    <td><span class="lr-badge lr-badge-paid">2 500 FCFA</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Zone éloignée</strong> (villages, zones rurales)</td>
+                    <td>1 à 3 jours</td>
+                    <td><span class="lr-badge lr-badge-paid">3 500 FCFA</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Commande &ge; 50 000 FCFA</strong> (Abidjan uniquement)</td>
+                    <td>1 à 3 jours</td>
+                    <td><span class="lr-badge lr-badge-free">Gratuit</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="lr-section">
+        <h2><span class="lr-icon orange"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Comment passer une commande ?</h2>
+        <p class="lr-subtitle">En quelques étapes simples, recevez vos articles préférés.</p>
+        <ol class="lr-steps">
+            <li><strong>Choisissez vos articles</strong> — Parcourez notre catalogue et sélectionnez les articles qui vous plaisent.</li>
+            <li><strong>Ajoutez au panier</strong> — Sélectionnez la taille et la quantité, puis cliquez sur "Ajouter au panier".</li>
+            <li><strong>Validez votre panier</strong> — Vérifiez vos articles, puis cliquez sur "Passer la commande".</li>
+            <li><strong>Renseignez votre adresse</strong> — Indiquez votre adresse de livraison complète (rue, commune, ville).</li>
+            <li><strong>Choisissez le paiement</strong> — Paiement uniquement cash à la livraison.</li>
+            <li><strong>Confirmez la commande</strong> — Un ticket vous sera attribué avec le statut de la commande par défaut "En attente".</li>
+        </ol>
+    </div>
+
+    <!-- RETOURS -->
+    <div class="lr-section">
+        <h2><span class="lr-icon purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg></span> Politique de retours & échanges</h2>
+        <p class="lr-subtitle">Votre satisfaction est notre priorité. Retournez ou échangez facilement.</p>
+
+        <div class="lr-grid">
+            <div class="lr-card">
+                <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Délai de retour</h3>
+                <p>Vous disposez de <strong>7 jours</strong> après réception pour demander un retour ou un échange.</p>
+            </div>
+            <div class="lr-card">
+                <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> État de l'article</h3>
+                <p>L'article doit être <strong>non porté</strong>, <strong>non lavé</strong> et dans son <strong>emballage d'origine</strong> avec les étiquettes.</p>
+            </div>
+            <div class="lr-card">
+                <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Remboursement</h3>
+                <p>Remboursement sous <strong>3 à 5 jours</strong> ouvrés via Mobile Money ou en espèces.</p>
+            </div>
+            <div class="lr-card">
+                <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg> Échange de taille</h3>
+                <p>La taille ne convient pas ? Échangez-la gratuitement sous 7 jours (sous réserve de disponibilité).</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="lr-section">
+        <h2><span class="lr-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span> Conditions de non-retour</h2>
+        <p class="lr-subtitle">Certains articles ne sont pas éligibles au retour.</p>
+        <ul style="list-style: none; padding: 0;">
+            <li style="padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 14px; color: #444;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Articles portés, lavés ou endommagés par le client</li>
+            <li style="padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 14px; color: #444;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Articles sans étiquettes ou sans emballage d'origine</li>
+            <li style="padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 14px; color: #444;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Articles personnalisés ou sur mesure</li>
+            <li style="padding: 8px 0; font-size: 14px; color: #444;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Demande de retour après le délai de 7 jours</li>
+        </ul>
+    </div>
+
+    <div class="lr-section">
+        <h2><span class="lr-icon blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a7bd5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Comment demander un retour ?</h2>
+        <p class="lr-subtitle">Suivez ces étapes pour initier un retour ou un échange.</p>
+        <ol class="lr-steps">
+            <li><strong>Contactez-nous</strong> — Envoyez un message sur WhatsApp au <a href="https://wa.me/2250161274083" style="color:#3a7bd5;">+225 01 61 27 40 83</a> avec votre numéro de commande.</li>
+            <li><strong>Précisez le motif</strong> — Indiquez si vous souhaitez un <strong>retour</strong> (remboursement) ou un <strong>échange</strong> (taille différente).</li>
+            <li><strong>Préparez le colis</strong> — Remettez l'article dans son emballage d'origine avec les étiquettes.</li>
+            <li><strong>Récupération</strong> — Un livreur passera récupérer l'article à votre adresse sous 24 à 48h.</li>
+            <li><strong>Traitement</strong> — Après vérification, votre remboursement ou échange est traité sous 3 à 5 jours.</li>
+        </ol>
+        <div class="lr-note">
+            <strong>Besoin d'aide ?</strong> Notre équipe est disponible du lundi au samedi de 8h à 20h sur WhatsApp pour vous accompagner.
+        </div>
+    </div>
+
+    <div class="lr-cta">
+        <a href="{% url 'contact' %}">Nous contacter</a>
+    </div>
+
+</div>
+
+{% include 'Articles/footer.html' %}
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

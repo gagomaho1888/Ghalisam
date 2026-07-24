@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livreur - Mes commandes</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/livreur.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+<div class="livreur-wrapper">
+    <aside class="livreur-sidebar">
+        <h3>Espace Livreur</h3>
+        <a href="{% url 'livreur_dashboard' %}">Tableau de bord</a>
+        <a href="{% url 'livreur_commandes' %}" class="active">
+            Mes commandes
+            <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+        </a>
+        <a href="{% url 'acceuil' %}">Retour au site</a>
+    </aside>
+    <main class="livreur-main">
+        <h1>Mes commandes</h1>
+
+        <div id="notificationToast" class="notification-toast" style="display:none;">
+            <div class="toast-content">
+                <span class="toast-icon">🔔</span>
+                <div class="toast-text">
+                    <strong id="toastTitle">Nouvelle commande</strong>
+                    <span id="toastMessage"></span>
+                </div>
+                <button onclick="fermerToast()" class="toast-close">&times;</button>
+            </div>
+        </div>
+
+        {% if messages %}
+        <div class="livreur-messages">
+            {% for msg in messages %}
+            <div class="livreur-alert {{ msg.tags }}">{{ msg }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="filtres">
+            <a href="{% url 'livreur_commandes' %}" class="filter-btn {% if not statut_selectionne %}active{% endif %}">Toutes</a>
+            <a href="{% url 'livreur_commandes' %}?statut=en_attente" class="filter-btn {% if statut_selectionne == 'en_attente' %}active{% endif %}">En attente</a>
+            <a href="{% url 'livreur_commandes' %}?statut=en_preparation" class="filter-btn {% if statut_selectionne == 'en_preparation' %}active{% endif %}">En préparation</a>
+            <a href="{% url 'livreur_commandes' %}?statut=en_livraison" class="filter-btn {% if statut_selectionne == 'en_livraison' %}active{% endif %}">En livraison</a>
+            <a href="{% url 'livreur_commandes' %}?statut=livree" class="filter-btn {% if statut_selectionne == 'livree' %}active{% endif %}">Livrée</a>
+            <a href="{% url 'livreur_commandes' %}?statut=livraison_echouee" class="filter-btn {% if statut_selectionne == 'livraison_echouee' %}active{% endif %}">Échouée</a>
+        </div>
+        <table class="livreur-table" id="commandesTable"
+               data-update-url="{% url 'livreur_update_status' 0 %}"
+               data-notif-lues-url="{% url 'api_notifications_lues' %}">
+            <thead>
+                <tr>
+                    <th>Ticket</th>
+                    <th>Client</th>
+                    <th>Téléphone</th>
+                    <th>Adresse</th>
+                    <th>Produits</th>
+                    <th>Montant</th>
+                    <th>Date</th>
+                    <th>Paiement</th>
+                    <th>Statut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="commandesBody">
+                {% for cmd in commandes %}
+                <tr>
+                    <td>{{ cmd.ticket }}</td>
+                    <td>{{ cmd.fullname|default:cmd.user.username }}</td>
+                    <td>{{ cmd.telephone }}</td>
+                    <td>
+                        {{ cmd.adresse|default:"—" }}<br>
+                        <small>{{ cmd.ville }}{% if cmd.code_postal %}, {{ cmd.code_postal }}{% endif %}</small>
+                    </td>
+                    <td style="max-width:200px;word-break:break-word;font-size:0.85em;">{{ cmd.items }}</td>
+                    <td>{{ cmd.total_price|floatformat:0 }} FCFA</td>
+                    <td>{{ cmd.created_at|date:"d/m/Y H:i" }}</td>
+                    <td>Paiement à la livraison</td>
+                    <td><span class="status-badge status-{{ cmd.statut }}">{{ cmd.get_statut_display }}</span></td>
+                    <td>
+                        <form method="post" action="{% url 'livreur_update_status' cmd.id %}" style="display:flex;flex-direction:column;gap:4px;">
+                            {% csrf_token %}
+                            <select name="statut" class="statut-select">
+                                <option value="en_attente" {% if cmd.statut == 'en_attente' %}selected{% endif %}>En attente</option>
+                                <option value="en_preparation" {% if cmd.statut == 'en_preparation' %}selected{% endif %}>En préparation</option>
+                                <option value="en_livraison" {% if cmd.statut == 'en_livraison' %}selected{% endif %}>En livraison</option>
+                                <option value="livree" {% if cmd.statut == 'livree' %}selected{% endif %}>Livrée</option>
+                                <option value="livraison_echouee" {% if cmd.statut == 'livraison_echouee' %}selected{% endif %}>Échouée</option>
+                            </select>
+                            <button type="submit" class="btn-sm">Mettre à jour</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="10" class="empty">Aucune commande attribuée.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            {% if commandes.has_previous %}
+                <a href="?page=1{% if statut_selectionne %}&statut={{ statut_selectionne }}{% endif %}" class="page-link">&laquo; Première</a>
+                <a href="?page={{ commandes.previous_page_number }}{% if statut_selectionne %}&statut={{ statut_selectionne }}{% endif %}" class="page-link">‹ Précédente</a>
+            {% endif %}
+            <span class="page-current">Page {{ commandes.number }} / {{ commandes.paginator.num_pages }}</span>
+            {% if commandes.has_next %}
+                <a href="?page={{ commandes.next_page_number }}{% if statut_selectionne %}&statut={{ statut_selectionne }}{% endif %}" class="page-link">Suivante ›</a>
+                <a href="?page={{ commandes.paginator.num_pages }}{% if statut_selectionne %}&statut={{ statut_selectionne }}{% endif %}" class="page-link">Dernière &raquo;</a>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<script src="{% static 'js/notifications.js' %}"></script>
+<script>
+    var toastTitle = document.getElementById('toastTitle');
+    var toastMessage = document.getElementById('toastMessage');
+
+    var updateUrlBase = document.getElementById('commandesTable').getAttribute('data-update-url');
+    var notifLuesUrl = document.getElementById('commandesTable').getAttribute('data-notif-lues-url');
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(String(str)));
+        return div.innerHTML;
+    }
+
+    function ajouterLigneCommande(data) {
+        var tbody = document.getElementById('commandesBody');
+        if (!tbody) return;
+        var tr = document.createElement('tr');
+        tr.className = 'nouvelle-ligne';
+        var csrf = getCSRFToken();
+        var actionUrl = updateUrlBase.replace('/0/', '/' + data.commande_id + '/');
+        tr.innerHTML = [
+            '<td>' + escapeHtml(data.ticket) + '</td>',
+            '<td>' + escapeHtml(data.client) + '</td>',
+            '<td>' + escapeHtml(data.telephone) + '</td>',
+            '<td>' + escapeHtml(data.adresse) + '</td>',
+            '<td style="max-width:200px;word-break:break-word;font-size:0.85em;">—</td>',
+            '<td>' + escapeHtml(data.montant) + ' FCFA</td>',
+            '<td>' + new Date().toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) + '</td>',
+            '<td>Paiement à la livraison</td>',
+            '<td><span class="status-badge status-en_attente">En attente</span></td>',
+            '<td><form method="post" action="' + actionUrl + '" style="display:flex;flex-direction:column;gap:4px;">',
+            '<input type="hidden" name="csrfmiddlewaretoken" value="' + csrf + '">',
+            '<select name="statut" class="statut-select">',
+            '<option value="en_attente" selected>En attente</option>',
+            '<option value="en_preparation">En pr\u00e9paration</option>',
+            '<option value="en_livraison">En livraison</option>',
+            '<option value="livree">Livr\u00e9e</option>',
+            '<option value="livraison_echouee">\u00c9chou\u00e9e</option>',
+            '</select>',
+            '<button type="submit" class="btn-sm">MAJ</button>',
+            '</form></td>'
+        ].join('');
+        var empty = tbody.querySelector('.empty');
+        if (empty) empty.parentElement.remove();
+        tbody.prepend(tr);
+    }
+    document.addEventListener('submit', function(e) {
+        var form = e.target;
+        if (form.tagName === 'FORM' && form.action.indexOf('/statut/') !== -1) {
+            var select = form.querySelector('select[name="statut"]');
+            if (select && (select.value === 'livree' || select.value === 'livraison_echouee')) {
+                navigator.sendBeacon(notifLuesUrl, new URLSearchParams({csrfmiddlewaretoken: getCSRFToken()}));
+            }
+        }
+    });
+</script>
+
+<style>
+.notification-toast {
+    position: fixed; top: 80px; right: 20px;
+    background: #1e293b; color: #fff;
+    padding: 14px 18px; border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    z-index: 9999; max-width: 380px;
+    animation: slideIn 0.35s ease;
+    cursor: pointer;
+}
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast-content { display: flex; align-items: center; gap: 12px; }
+.toast-icon { font-size: 1.5rem; }
+.toast-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.toast-text strong { font-size: 0.9rem; }
+.toast-text span { font-size: 0.8rem; color: #cbd5e1; }
+.toast-close { background: none; border: none; color: #94a3b8; font-size: 1.3rem; cursor: pointer; padding: 0 4px; }
+.toast-close:hover { color: #fff; }
+.nouvelle-ligne { animation: highlightRow 2s ease; }
+@keyframes highlightRow { 0% { background: rgba(59,130,246,0.15); } 100% { background: transparent; } }
+.notif-badge { background: #ef4444; color: #fff; font-size: 0.7rem; padding: 1px 7px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+</style>
+</body>
+</html>

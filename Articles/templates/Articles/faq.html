@@ -1,0 +1,305 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <style>
+        .faq-hero {
+            background: linear-gradient(135deg, #111 0%, #1a1a2e 100%);
+            color: #fff;
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+        .faq-hero h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .faq-hero p {
+            color: #aaa;
+            font-size: 16px;
+        }
+        .faq-container {
+            max-width: 780px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .faq-category {
+            margin-bottom: 35px;
+        }
+        .faq-category-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #00d2ff;
+            display: inline-block;
+        }
+        .faq-item {
+            background: #fff;
+            border: 1px solid #edf2f7;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+        .faq-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .faq-question {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 600;
+            color: #111;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .faq-question:hover {
+            color: #3a7bd5;
+        }
+        .faq-arrow {
+            font-size: 12px;
+            color: #999;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+        .faq-item.open .faq-arrow {
+            transform: rotate(180deg);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 20px;
+        }
+        .faq-item.open .faq-answer {
+            max-height: 300px;
+            padding: 0 20px 16px;
+        }
+        .faq-answer p {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #555;
+        }
+        .faq-contact-bar {
+            max-width: 780px;
+            margin: 20px auto 50px;
+            padding: 24px;
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            border-radius: 12px;
+            text-align: center;
+            color: #111;
+        }
+        .faq-contact-bar p {
+            font-size: 15px;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+        .faq-contact-bar a {
+            display: inline-block;
+            background: #111;
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .faq-contact-bar a:hover {
+            background: #fff;
+            color: #111;
+        }
+    </style>
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="faq-hero">
+    <h1>Foire aux questions</h1>
+    <p>Trouvez rapidement les réponses à vos questions</p>
+</div>
+
+<div class="faq-container">
+
+    <div class="faq-category">
+        <div class="faq-category-title">Commande & paiement</div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Comment passer une commande ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Cliquez sur un article, choisissez la taille et la quantité, puis ajoutez au panier. Quand vous avez fini vos achats, cliquez sur "Panier" puis suivez les étapes de validation. Vous recevrez un email de confirmation.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Quels sont les moyens de paiement acceptés ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Nous acceptons le paiement à la livraison (cash) et Mobile Money (Orange Money, MTN Money, Moov Money). Le paiement s'effectue directement lors de la réception de votre colis.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Puis-je modifier ou annuler ma commande ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Vous pouvez modifier ou annuler votre commande tant qu'elle n'a pas été préparée. Contactez-nous rapidement via WhatsApp au +225 01 61 27 40 83 avec votre numéro de commande.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="faq-category">
+        <div class="faq-category-title">Livraison</div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Quels sont les délais de livraison ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>La livraison prend généralement 1 à 3 jours ouvrés selon votre localisation. Pour Abidjan, la livraison est possible sous 24h. Pour les autres villes, comptez 2 à 3 jours.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Combien coûte la livraison ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Les frais de livraison varient selon votre adresse et le poids de la commande. Le tarif exact s'affiche automatiquement lors de la validation de votre panier. La livraison gratuite est disponible dès un certain montant d'achat.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Comment suivre ma commande ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Connectez-vous à votre compte et rendez-vous dans la section "Profil". Vous y trouverez l'historique de vos commandes avec leur statut en temps réel (En attente, En préparation, En livraison, Livrée).</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Livrez-vous partout en Côte d'Ivoire ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Oui, nous livrons dans toutes les villes de Côte d'Ivoire. Pour les villes éloignées, le délai peut être légèrement plus long. Contactez-nous pour plus de détails sur votre zone de livraison.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="faq-category">
+        <div class="faq-category-title">Retours & échanges</div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Puis-je retourner un article ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Oui, vous avez 7 jours après réception pour retourner un article non utilisé et dans son emballage d'origine. Contactez-nous via WhatsApp pour organiser le retour.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Comment échanger un article ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Si la taille ne convient pas, vous pouvez demander un échange sous 7 jours. Envoyez-nous un message WhatsApp avec votre numéro de commande et la taille souhaitée.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Quand serai-je remboursé ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Le remboursement est effectué sous 3 à 5 jours ouvrés après validation du retour. Le montant est crédité sur votre Mobile Money ou remis en espèces selon votre préférence.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="faq-category">
+        <div class="faq-category-title">Compte & sécurité</div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Comment créer un compte ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Cliquez sur "S'inscrire", remplissez le formulaire avec vos informations, puis validez le code de vérification envoyé par email. Votre compte est ensuite actif.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                J'ai oublié mon mot de passe, que faire ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Sur la page de connexion, cliquez sur "Mot de passe oublié ?". Entrez votre email, vous recevrez un code pour définir un nouveau mot de passe.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Mes données personnelles sont-elles sécurisées ?
+                <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </button>
+            <div class="faq-answer">
+                <p>Oui, la sécurité de vos données est notre priorité. Nous n'utilisons jamais vos informations à des fins commerciales et elles ne sont partagées avec aucun tiers.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="faq-contact-bar">
+    <p>Vous n'avez pas trouvé votre réponse ?</p>
+    <a href="{% url 'contact' %}">Nous contacter</a>
+</div>
+
+<script>
+function toggleFaq(btn) {
+    var item = btn.parentElement;
+    var wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(el) {
+        el.classList.remove('open');
+    });
+    if (!wasOpen) {
+        item.classList.add('open');
+    }
+}
+</script>
+
+{% include 'Articles/footer.html' %}
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

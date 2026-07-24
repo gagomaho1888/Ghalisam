@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gestion des livreurs</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+<div class="admin-wrapper">
+    <aside class="admin-sidebar">
+        <h3>Administration</h3>
+        <a href="{% url 'admin_dashboard' %}">Tableau de bord</a>
+        <a href="{% url 'toutes_commandes' %}">Commandes</a>
+        <a href="{% url 'gestion_livreurs' %}" class="active">Livreurs</a>
+        <a href="/admin/">Django Admin</a>
+        <a href="{% url 'acceuil' %}">Retour au site</a>
+    </aside>
+    <main class="admin-main">
+        <div class="admin-header">
+            <h1>Gestion des livreurs</h1>
+            <a href="{% url 'create_livreur' %}" class="btn-primary">+ Nouveau livreur</a>
+        </div>
+        {% if messages %}
+        <div class="admin-messages">
+            {% for msg in messages %}
+            <div class="admin-alert {{ msg.tags }}">{{ msg }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Téléphone</th>
+                    <th>Statut</th>
+                    <th>Date création</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for livreur in livreurs %}
+                <tr>
+                    <td>{{ livreur.user.username }}</td>
+                    <td>{{ livreur.telephone|default:"—" }}</td>
+                    <td>
+                        {% if livreur.est_actif %}
+                        <span class="status-badge status-livree">Actif</span>
+                        {% else %}
+                        <span class="status-badge status-livraison_echouee">Inactif</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ livreur.date_creation|date:"d/m/Y" }}</td>
+                    <td class="actions">
+                        <a href="{% url 'edit_livreur' livreur.id %}" class="btn-sm">Modifier</a>
+                        <form method="post" action="{% url 'toggle_livreur' livreur.id %}" style="display:inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-sm btn-warning">
+                                {% if livreur.est_actif %}Désactiver{% else %}Activer{% endif %}
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'delete_livreur' livreur.id %}" style="display:inline" onsubmit="return confirm('Supprimer ce livreur ?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-sm btn-danger">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="empty">Aucun livreur.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</div>
+</body>
+</html>

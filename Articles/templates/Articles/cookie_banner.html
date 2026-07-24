@@ -1,0 +1,17 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/cookie.css' %}">
+
+<div id="cookie-banner" class="cookie-banner" style="display:none;">
+    <div class="cookie-content">
+        <div class="cookie-text">
+            <h3>🍪 Nous utilisons des cookies</h3>
+            <p>Nous utilisons des cookies essentiels au fonctionnement du Site (panier, session, sécurité) et des cookies de performance pour améliorer votre expérience. Consultez notre <a href="{% url 'cookies' %}">Politique de Cookies</a> pour en savoir plus.</p>
+        </div>
+        <div class="cookie-actions">
+            <button id="cookie-reject" class="cookie-btn cookie-btn-reject">Refuser</button>
+            <button id="cookie-accept" class="cookie-btn cookie-btn-accept">Tout accepter</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/cookie_consent.js' %}"></script>

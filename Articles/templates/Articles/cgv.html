@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditions Générales de Vente - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <style>
+        .legal-hero {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .legal-hero h1 { margin: 0; font-size: 32px; }
+        .legal-hero p { margin-top: 10px; opacity: 0.9; }
+        .legal-content {
+            width: min(800px, 92%);
+            margin: 50px auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            padding: 45px;
+            line-height: 1.8;
+            color: #333;
+        }
+        .legal-content h2 { font-size: 20px; color: #111; margin: 30px 0 12px; }
+        .legal-content h2:first-child { margin-top: 0; }
+        .legal-content p { margin: 10px 0; font-size: 15px; }
+        .legal-content ul { margin: 10px 0 10px 20px; }
+        .legal-content li { margin: 6px 0; font-size: 15px; }
+        .legal-content strong { color: #111; }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="legal-hero">
+    <h1>Conditions Générales de Vente</h1>
+    <p>Dernière mise à jour : Juillet 2026</p>
+</div>
+
+<div class="legal-content">
+    <h2>1. Objet</h2>
+    <p>Les présentes Conditions Générales de Vente (CGV) régissent les relations contractuelles entre <strong>Galisham Boutique</strong> (ci-après « le Vendeur ») et tout acheteur (ci-après « le Client ») effectuant un achat sur le site <strong>galishamboutique.com</strong>.</p>
+
+    <h2>2. Produits</h2>
+    <p>Les produits proposés à la vente sont ceux figurant sur le Site. Chaque produit est présenté avec une description détaillée incluant ses caractéristiques essentielles. Les photographs des produits sont aussi fidèles que possible mais ne sauraient garantir une similitude parfaite avec le produit réel.</p>
+
+    <h2>3. Prix</h2>
+    <p>Les prix sont indiqués en <strong>Francs CFA (FCFA)</strong> toutes taxes comprises. Galisham Boutique se réserve le droit de modifier ses prix à tout moment, étant entendu que le prix applicable est celui en vigueur au moment de la validation de la commande.</p>
+
+    <h2>4. Commande</h2>
+    <p>La commande est validée lorsque le Client a :</p>
+    <ul>
+        <li>Sélectionné les produits souhaités.</li>
+        <li>Renseigné les informations de livraison.</li>
+        <li>Confirmé le paiement.</li>
+    </ul>
+    <p>Un email de confirmation est envoyé au Client après validation de la commande.</p>
+
+    <h2>5. Paiement</h2>
+    <p>Le paiement s'effectue à la livraison (paiement à la livraison). Le Client règle le montant total de sa commande au livreur lors de la réception des produits.</p>
+
+    <h2>6. Livraison</h2>
+    <p>La livraison est effectuée à l'adresse indiquée par le Client lors de la commande. Les délais de livraison sont indicatifs et peuvent varier selon la zone géographique. Galisham Boutique s'engage à livrer les produits dans les meilleurs délais.</p>
+    <p>Pour plus de détails, consultez notre page <strong><a href="{% url 'livraison_retours' %}" style="color:#3a7bd5;">Livraison & retours</a></strong>.</p>
+
+    <h2>7. Droit de rétractation</h2>
+    <p>Conformément à la réglementation en vigueur, le Client dispose d'un délai de <strong>7 jours</strong> à compter de la réception de sa commande pour exercer son droit de rétractation, sans avoir à justifier de motif.</p>
+    <p>Les produits doivent être retournés dans leur état d'origine, sans signe d'utilisation et dans leur emballage d'origine.</p>
+
+    <h2>8. Réclamations</h2>
+    <p>Toute réclamation relative à une commande peut être adressée via notre page <strong><a href="{% url 'contact' %}" style="color:#3a7bd5;">Contact</a></strong> ou par WhatsApp au <strong>+225 01 61 27 40 83</strong>.</p>
+
+    <h2>9. Garantie</h2>
+    <p>Les produits bénéficient de la garantie légale de conformité. En cas de produit défectueux ou non conforme, le Client peut demander l'échange ou le remboursement du produit.</p>
+
+    <h2>10. Responsabilité</h2>
+    <p>Le Vendeur ne saurait être tenu responsable des dommages résultant d'une mauvaise utilisation des produits achetés.</p>
+
+    <h2>11. Protection des données</h2>
+    <p>Les données personnelles collectées sont traitées conformément à notre politique de confidentialité. Le Client dispose d'un droit d'accès, de rectification et de suppression de ses données.</p>
+
+    <h2>12. Droit applicable</h2>
+    <p>Les présentes CGV sont régies par le droit ivoirien. En cas de litige, les tribunaux compétents d'Abidjan seront seuls compétents.</p>
+</div>
+
+{% include 'Articles/footer.html' %}
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

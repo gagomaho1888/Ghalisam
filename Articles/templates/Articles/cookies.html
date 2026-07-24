@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politique de Cookies - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <style>
+        .legal-hero {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .legal-hero h1 { margin: 0; font-size: 32px; }
+        .legal-hero p { margin-top: 10px; opacity: 0.9; }
+        .legal-content {
+            width: min(800px, 92%);
+            margin: 50px auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            padding: 45px;
+            line-height: 1.8;
+            color: #333;
+        }
+        .legal-content h2 { font-size: 20px; color: #111; margin: 30px 0 12px; }
+        .legal-content h2:first-child { margin-top: 0; }
+        .legal-content p { margin: 10px 0; font-size: 15px; }
+        .legal-content ul { margin: 10px 0 10px 20px; }
+        .legal-content li { margin: 6px 0; font-size: 15px; }
+        .legal-content strong { color: #111; }
+        .cookie-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 14px; }
+        .cookie-table th, .cookie-table td { border: 1px solid #e2e8f0; padding: 10px 14px; text-align: left; }
+        .cookie-table th { background: #f1f5f9; color: #111; font-weight: 600; }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="legal-hero">
+    <h1>Politique de Cookies</h1>
+    <p>Dernière mise à jour : Juillet 2026</p>
+</div>
+
+<div class="legal-content">
+    <h2>1. Qu'est-ce qu'un cookie ?</h2>
+    <p>Un cookie est un petit fichier texte déposé sur votre appareil (ordinateur, tablette, smartphone) lors de la visite d'un site web. Il permet au site de mémoriser vos actions et préférences pendant une durée déterminée.</p>
+
+    <h2>2. Cookies utilisés sur le Site</h2>
+    <p>Galisham Boutique utilise les cookies suivants :</p>
+
+    <table class="cookie-table">
+        <thead>
+            <tr>
+                <th>Cookie</th>
+                <th>Finalité</th>
+                <th>Durée</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>sessionid</strong></td>
+                <td>Maintien de la session utilisateur (panier, connexion)</td>
+                <td>Session</td>
+            </tr>
+            <tr>
+                <td><strong>csrftoken</strong></td>
+                <td>Protection contre les attaques CSRF</td>
+                <td>1 an</td>
+            </tr>
+            <tr>
+                <td><strong>cart</strong></td>
+                <td>Mémorisation du panier d'achat</td>
+                <td>Session</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>3. Cookies essentiels</h2>
+    <p>Ces cookies sont indispensables au fonctionnement du Site. Ils permettent :</p>
+    <ul>
+        <li>Le maintien de votre panier d'achat.</li>
+        <li>La sécurité de vos transactions.</li>
+        <li>L'authentification et la connexion à votre compte.</li>
+    </ul>
+    <p>Ces cookies ne peuvent pas être désactivés car ils sont nécessaires au fonctionnement du Site.</p>
+
+    <h2>4. Cookies de performance</h2>
+    <p>Nous utilisons des cookies de performance pour comprendre comment les visiteurs interagissent avec le Site. Ces données nous aident à améliorer l'expérience utilisateur.</p>
+
+    <h2>5. Gestion des cookies</h2>
+    <p>Vous pouvez gérer les cookies directement depuis les paramètres de votre navigateur :</p>
+    <ul>
+        <li><strong>Chrome</strong> : Paramètres > Confidentialité et sécurité > Cookies</li>
+        <li><strong>Firefox</strong> : Options > Vie privée > Cookies</li>
+        <li><strong>Safari</strong> > Préférences > Confidentialité</li>
+        <li><strong>Edge</strong> : Paramètres > Confidentialité > Cookies</li>
+    </ul>
+
+    <h2>6. Conséquences de la désactivation</h2>
+    <p>La désactivation des cookies essentiels peut entraîner l'impossibilité d'utiliser certaines fonctionnalités du Site, notamment le panier d'achat et la connexion à votre compte.</p>
+
+    <h2>7. Mise à jour de cette politique</h2>
+    <p>Cette politique de cookies peut être mise à jour à tout moment. Toute modification sera publiée sur cette page avec une date de mise à jour révisée.</p>
+</div>
+
+{% include 'Articles/footer.html' %}
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

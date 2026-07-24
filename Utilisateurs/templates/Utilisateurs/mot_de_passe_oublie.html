@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mot de passe oublié - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="auth-container">
+    <h1>Mot de passe oublié</h1>
+    <p style="text-align:center; color:#555; margin-bottom:20px;">
+        Entrez votre adresse email pour recevoir un code de réinitialisation.
+    </p>
+
+    {% if error %}
+    <div class="message">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="message" style="background:#e5fee5; color:#006600; border-color:#c5f3c5;">{{ success }}</div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Votre adresse email" required>
+
+        <button type="submit">Envoyer le code</button>
+    </form>
+
+    <div class="link-row">
+        <a href="{% url 'connexion' %}" class="secondary-btn">Retour à la connexion</a>
+    </div>
+</div>
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

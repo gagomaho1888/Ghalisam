@@ -1,0 +1,271 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contactez-nous - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <style>
+        .contact-hero {
+            background: linear-gradient(135deg, #111 0%, #1a1a2e 100%);
+            color: #fff;
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+        .contact-hero h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .contact-hero p {
+            color: #aaa;
+            font-size: 16px;
+        }
+        .contact-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 700px) {
+            .contact-container { grid-template-columns: 1fr; }
+        }
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .contact-card {
+            background: #fff;
+            border: 1px solid #edf2f7;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: 0.2s;
+        }
+        .contact-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transform: translateY(-2px);
+        }
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 22px;
+        }
+        .icon-whatsapp { background: #e5faf0; color: #25D366; }
+        .icon-email { background: #eef2ff; color: #3a7bd5; }
+        .icon-phone { background: #fef3c7; color: #d97706; }
+        .icon-location { background: #fee2e2; color: #dc2626; }
+        .icon-hours { background: #f0fdf4; color: #16a34a; }
+        .contact-card-text h3 {
+            font-size: 15px;
+            color: #111;
+            margin-bottom: 4px;
+        }
+        .contact-card-text p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        .contact-card-text a {
+            color: #3a7bd5;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .contact-card-text a:hover {
+            text-decoration: underline;
+        }
+        .contact-form-box {
+            background: #fff;
+            border: 1px solid #edf2f7;
+            border-radius: 12px;
+            padding: 30px;
+        }
+        .contact-form-box h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #111;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #d6d8e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #00d2ff;
+            box-shadow: 0 0 0 3px rgba(0,210,255,0.1);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+        .form-submit {
+            width: 100%;
+            padding: 12px;
+            background: #00d2ff;
+            color: #111;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .form-submit:hover {
+            background: #3a7bd5;
+            color: #fff;
+        }
+        .contact-success {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .contact-success .check {
+            width: 60px; height: 60px;
+            background: #00d2ff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px; color: #111;
+        }
+        .contact-success h3 {
+            color: #111;
+            margin-bottom: 8px;
+        }
+        .contact-success p {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="contact-hero">
+    <h1>Contactez-nous</h1>
+    <p>Nous sommes là pour vous aider</p>
+</div>
+
+<div class="contact-container">
+    <div class="contact-info">
+        <div class="contact-card">
+            <div class="contact-icon icon-whatsapp">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 1.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </div>
+            <div class="contact-card-text">
+                <h3>WhatsApp</h3>
+                <p>Le moyen le plus rapide pour nous joindre<br><a href="https://wa.me/2250161274083" target="_blank">+225 01 61 27 40 83</a></p>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <div class="contact-icon icon-email"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3a7bd5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+            <div class="contact-card-text">
+                <h3>Email</h3>
+                <p>Écrivez-nous à tout moment<br><a href="mailto:gagomaho18@gmail.com">gagomaho18@gmail.com</a></p>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <div class="contact-icon icon-phone"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+            <div class="contact-card-text">
+                <h3>Téléphone</h3>
+                <p>Disponible du lundi au samedi<br><a href="tel:+2250161274083">+225 01 61 27 40 83</a></p>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <div class="contact-icon icon-location"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="contact-card-text">
+                <h3>Adresse</h3>
+                <p>Abidjan, Côte d'Ivoire</p>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <div class="contact-icon icon-hours"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="contact-card-text">
+                <h3>Horaires</h3>
+                <p>Lundi - Samedi : 8h00 - 20h00<br>Dimanche : Fermé</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-form-box">
+        <h2>Envoyez-nous un message</h2>
+
+        {% if sent %}
+        <div class="contact-success">
+            <div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h3>Message envoyé !</h3>
+            <p>Nous vous répondrons dans les plus brefs délais.</p>
+        </div>
+        {% else %}
+        {% if error %}
+        <div class="message" style="margin-bottom:16px;">{{ error }}</div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="fullname">Nom complet</label>
+                <input type="text" id="fullname" name="fullname" placeholder="Votre nom complet" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Votre adresse email" required>
+            </div>
+            <div class="form-group">
+                <label for="subject">Sujet</label>
+                <select id="subject" name="subject" required>
+                    <option value="">Choisir un sujet</option>
+                    <option value="commande">Question sur une commande</option>
+                    <option value="livraison">Livraison</option>
+                    <option value="retour">Retour / Échange</option>
+                    <option value="produit">Question sur un article</option>
+                    <option value="partenariat">Partenariat / Collaboration</option>
+                    <option value="autre">Autre</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" placeholder="Décrivez votre demande..." required></textarea>
+            </div>
+            <button type="submit" class="form-submit">Envoyer le message</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+{% include 'Articles/footer.html' %}
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

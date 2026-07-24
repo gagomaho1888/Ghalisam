@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditions Générales d'Utilisation - Galisham Boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <style>
+        .legal-hero {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .legal-hero h1 { margin: 0; font-size: 32px; }
+        .legal-hero p { margin-top: 10px; opacity: 0.9; }
+        .legal-content {
+            width: min(800px, 92%);
+            margin: 50px auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            padding: 45px;
+            line-height: 1.8;
+            color: #333;
+        }
+        .legal-content h2 { font-size: 20px; color: #111; margin: 30px 0 12px; }
+        .legal-content h2:first-child { margin-top: 0; }
+        .legal-content p { margin: 10px 0; font-size: 15px; }
+        .legal-content ul { margin: 10px 0 10px 20px; }
+        .legal-content li { margin: 6px 0; font-size: 15px; }
+        .legal-content strong { color: #111; }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+
+<div class="legal-hero">
+    <h1>Conditions Générales d'Utilisation</h1>
+    <p>Dernière mise à jour : Juillet 2026</p>
+</div>
+
+<div class="legal-content">
+    <h2>1. Objet</h2>
+    <p>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'utilisation du site <strong>Galisham Boutique</strong> (ci-après « le Site »), accessible à l'adresse <strong>galishamboutique.com</strong>. En accédant ou en utilisant le Site, vous acceptez sans réserve les présentes CGU.</p>
+
+    <h2>2. Acceptation des conditions</h2>
+    <p>L'utilisation du Site implique l'acceptation pleine et entière des présentes CGU. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser le Site.</p>
+
+    <h2>3. Inscription et compte</h2>
+    <p>Pour accéder à certaines fonctionnalités du Site, vous devez créer un compte. Vous vous engagez à :</p>
+    <ul>
+        <li>Fournir des informations exactes et à jour lors de l'inscription.</li>
+        <li>Conserver la confidentialité de vos identifiants de connexion.</li>
+        <li>Ne pas créer de compte multiple ou frauduleux.</li>
+        <li>Notifier immédiatement tout usage non autorisé de votre compte.</li>
+    </ul>
+
+    <h2>4. Utilisation du Site</h2>
+    <p>Vous vous engagez à utiliser le Site conformément à la loi et aux présentes CGU. Il est interdit de :</p>
+    <ul>
+        <li>Utiliser le Site à des fins illicites ou frauduleuses.</li>
+        <li>Tenter de compromettre la sécurité ou le fonctionnement du Site.</li>
+        <li>Reproduire, copier ou distribuer le contenu du Site sans autorisation.</li>
+        <li>Collecter ou extraire des données personnelles d'autres utilisateurs.</li>
+    </ul>
+
+    <h2>5. Propriété intellectuelle</h2>
+    <p>L'ensemble du contenu du Site (textes, images, logos, vidéos, graphismes, logiciels) est la propriété exclusive de <strong>Galisham Boutique</strong> ou de ses partenaires et est protégé par les lois relatives à la propriété intellectuelle. Toute reproduction non autorisée est interdite.</p>
+
+    <h2>6. Responsabilité</h2>
+    <p>Galisham Boutique s'efforce d'assurer l'exactitude des informations publiées sur le Site. Cependant, nous ne pouvons garantir l'absence totale d'erreurs. Notre responsabilité ne saurait être engagée pour :</p>
+    <ul>
+        <li>Les dommages résultant de l'utilisation du Site.</li>
+        <li>Les interruptions ou dysfonctionnements du service.</li>
+        <li>Les virus ou programmes malveillants pouvant affecter votre appareil.</li>
+    </ul>
+
+    <h2>7. Liens externes</h2>
+    <p>Le Site peut contenir des liens vers des sites tiers. Galisham Boutique n'exerce aucun contrôle sur ces sites et décline toute responsabilité quant à leur contenu ou leurs pratiques.</p>
+
+    <h2>8. Modification des CGU</h2>
+    <p>Galisham Boutique se réserve le droit de modifier les présentes CGU à tout moment. Les modifications prennent droit à leur publication sur le Site. Il est conseillé de consulter régulièrement cette page.</p>
+
+    <h2>9. Droit applicable</h2>
+    <p>Les présentes CGU sont régies par le droit ivoirien. En cas de litige, les tribunaux compétents d'Abidjan seront seuls compétents.</p>
+</div>
+
+{% include 'Articles/footer.html' %}
+{% include 'Articles/cookie_banner.html' %}
+</body>
+</html>

@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Tableau de bord</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+<div class="admin-wrapper">
+    <aside class="admin-sidebar">
+        <h3>Administration</h3>
+        <a href="{% url 'admin_dashboard' %}" class="active">Tableau de bord</a>
+        <a href="{% url 'toutes_commandes' %}">Commandes</a>
+        <a href="{% url 'gestion_livreurs' %}">Livreurs</a>
+        <a href="/admin/">Django Admin</a>
+        <a href="{% url 'acceuil' %}">Retour au site</a>
+    </aside>
+    <main class="admin-main">
+        <h1>Tableau de bord</h1>
+        {% if messages %}
+        <div class="admin-messages">
+            {% for msg in messages %}
+            <div class="admin-alert {{ msg.tags }}">{{ msg }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">{{ total_commandes }}</span>
+                <span class="stat-label">Total commandes</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ commandes_en_attente }}</span>
+                <span class="stat-label">En attente</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ commandes_encours }}</span>
+                <span class="stat-label">En cours</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ commandes_livrees }}</span>
+                <span class="stat-label">Livrées</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ livreurs_actifs }}</span>
+                <span class="stat-label">Livreurs actifs</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ commandes_sans_livreur }}</span>
+                <span class="stat-label">Sans livreur</span>
+            </div>
+        </div>
+
+        <h2>Dernières commandes</h2>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Ticket</th>
+                    <th>Client</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                    <th>Livreur</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cmd in commandes %}
+                <tr>
+                    <td>{{ cmd.ticket }}</td>
+                    <td>{{ cmd.user.username }}</td>
+                    <td>{{ cmd.total_price|floatformat:0 }} FCFA</td>
+                    <td><span class="status-badge status-{{ cmd.statut }}">{{ cmd.get_statut_display }}</span></td>
+                    <td>{% if cmd.livreur %}{{ cmd.livreur.username }}{% else %}<span class="muted">—</span>{% endif %}</td>
+                    <td>{{ cmd.created_at|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="empty">Aucune commande.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</div>
+</body>
+</html>

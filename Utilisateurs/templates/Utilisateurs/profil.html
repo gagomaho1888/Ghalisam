@@ -1,0 +1,114 @@
+{% extends 'Articles/base.html' %}
+{% load static %}
+{% load article_extras %}
+
+{% block title %}Profil - Galisham Boutique{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profil.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-container">
+    <h1 class="profile-title">Mon Profil</h1>
+    <p class="welcome">Bienvenue {{ request.user.get_full_name|default:request.user.username }}</p>
+
+    <div class="profile-row">
+        <div class="profile-item">
+            <h3>Nom d'utilisateur</h3>
+            <p>{{ request.user.username }}</p>
+        </div>
+        <div class="profile-item">
+            <h3>Email</h3>
+            <p>{{ request.user.email }}</p>
+        </div>
+        <div class="profile-item">
+            <h3>Nom complet</h3>
+            <p>{{ request.user.get_full_name|default:'Non défini' }}</p>
+        </div>
+        <div class="profile-item">
+            <h3>Statut</h3>
+            <p>Utilisateur connecté</p>
+        </div>
+    </div>
+
+    <div class="profile-row" style="margin-top:30px;">
+        <div class="profile-item" style="grid-column:1/-1;">
+            <h3>Informations de livraison enregistrées</h3>
+            {% if utilisateur %}
+                <p><strong>Pays :</strong> {{ utilisateur.pays|default:'Non défini' }}</p>
+                <p><strong>Ville :</strong> {{ utilisateur.ville|default:'Non défini' }}</p>
+                <p><strong>Code postal :</strong> {{ utilisateur.code_postal|default:'Non défini' }}</p>
+                <p><strong>Téléphone :</strong> {{ utilisateur.telephone|default:'Non défini' }}</p>
+            {% else %}
+                <p style="color:#555;">Aucune information de livraison enregistrée. Validez une commande pour sauvegarder ces données.</p>
+            {% endif %}
+        </div>
+    </div>
+
+{% if delivered_products %}
+    <div class="profile-row" style="margin-top:30px;">
+        <div class="profile-item" style="grid-column:1/-1;">
+            <h3>Produits à évaluer</h3>
+            <p style="color:#64748b;font-size:13px;margin-bottom:12px;">Ces produits ont été livrés. Donnez votre avis !</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+                {% for p in delivered_products %}
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;text-align:center;">
+                    {% if p.image %}
+                        <img src="{{ p.image }}" alt="{{ p.nom }}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;margin-bottom:10px;">
+                    {% else %}
+                        <div style="width:100%;height:100px;background:#e2e8f0;border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:28px;">📦</div>
+                    {% endif %}
+                    <strong style="font-size:13px;color:#111;">{{ p.nom }}</strong>
+                    <span style="font-size:11px;color:#94a3b8;margin:4px 0;">{{ p.ticket }} — {{ p.date|date:'d/m/Y' }}</span>
+                    {% if p.already_reviewed %}
+                        <span style="font-size:12px;color:#059669;font-weight:600;">✓ Avis déjà publié</span>
+                    {% else %}
+                        <a href="{% url 'produit_detail' article_id=p.id %}" style="display:inline-block;margin-top:8px;padding:8px 16px;background:#f59e0b;color:white;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;">Noter ce produit</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+    <div class="profile-row" style="margin-top:30px;">
+        <div class="profile-item" style="grid-column:1/-1;">
+            <h3>Vos commandes</h3>
+            {% if commandes %}
+                <ul style="list-style:none;padding:0;margin:0;">
+                    {% for commande in commandes %}
+                     <li style="margin-bottom:12px;padding:14px;border-radius:12px;background:#f8fafc;border:1px solid #edf2f7;">
+                         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
+                             <div>
+                                 <strong>{{ commande.ticket }}</strong> — {{ commande.created_at|date:'d/m/Y H:i' }}<br>
+                                 <span style="color:#555;">{{ commande.fullname }}</span><br>
+                                 <span style="color:#777;font-size:13px;">{{ commande.items }}</span>
+                             </div>
+                             <span class="statut-badge statut-{{ commande.statut }}">
+                                 {% if commande.statut == 'livree' %}✓ {% endif %}
+                                 {{ commande.get_statut_display }}
+                             </span>
+                         </div>
+                          <div style="margin-top:6px;font-size:13px;display:flex;gap:20px;flex-wrap:wrap;">
+                              <span>💰 Total : <strong style="color:#11998e;">{{ commande.total_price|price_fr }} FCFA</strong></span>
+                              {% if commande.shipping_cost %}
+                              <span>🚚 Frais livraison : <strong>{{ commande.shipping_cost|price_fr }} FCFA</strong></span>
+                              {% endif %}
+                         </div>
+                     </li>
+                     {% endfor %}
+                </ul>
+            {% else %}
+                <p style="color:#555;">Aucune commande enregistrée pour le moment.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="profile-footer">
+        <a href="{% url 'produit_list' %}">Voir les produits</a>
+    </div>
+</div>
+{% endblock %}

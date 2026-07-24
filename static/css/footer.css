@@ -1,0 +1,126 @@
+.site-footer {
+    background: #111;
+    color: #ccc;
+    padding: 50px 30px 0;
+    margin-top: 60px;
+    font-family: Arial, sans-serif;
+    width: 100%;
+    box-sizing: border-box;
+}
+.footer-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+.footer-col h3 {
+    color: #fff;
+    font-size: 15px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.footer-col p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #aaa;
+    margin-bottom: 4px;
+}
+.footer-col a {
+    font-size: 13px;
+    line-height: 1.8;
+    color: #aaa;
+    text-decoration: none;
+    display: block;
+}
+.footer-col a:hover { color: #00d2ff; }
+.whatsapp-avail { font-size: 12px; color: #888; margin-top: 4px; }
+.whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background: #25D366;
+    color: #fff !important;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+.whatsapp-btn:hover {
+    background: #1ebe5c;
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+}
+.footer-logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 8px;
+}
+.footer-social {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.footer-social a {
+    width: 34px;
+    height: 34px;
+    background: #222;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 15px;
+    transition: 0.3s;
+}
+.footer-social a:hover {
+    background: #00d2ff;
+    color: #111;
+}
+.footer-newsletter-form {
+    display: flex;
+    margin-top: 8px;
+}
+.footer-newsletter-form input {
+    flex: 1;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 6px 0 0 6px;
+    outline: none;
+    font-size: 13px;
+}
+.footer-newsletter-form button {
+    padding: 9px 16px;
+    background: #00d2ff;
+    color: #111;
+    border: none;
+    border-radius: 0 6px 6px 0;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 13px;
+}
+.footer-newsletter-form button:hover {
+    background: #3a7bd5;
+    color: #fff;
+}
+.footer-bottom {
+    border-top: 1px solid #222;
+    padding: 18px 0;
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 13px;
+    color: #666;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+}
