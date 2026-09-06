@@ -33,13 +33,11 @@ def env_list(key: str, default: str = '') -> list:
 # ---------------------------------------------------------------------------
 
 _secret = env_str('DJANGO_SECRET_KEY')
-if not _secret:
-    if env_bool('DJANGO_DEBUG', False):
-        import warnings
-        warnings.warn('DJANGO_SECRET_KEY non défini – clé de secours utilisée (développement uniquement).')
-        _secret = 'django-insecure-dev-only-change-me-in-production!'
-    else:
-        raise ValueError('DJANGO_SECRET_KEY doit être défini en production.')
+if not _secret or _secret == 'change-me-to-a-long-random-string':
+    raise ValueError(
+        'DJANGO_SECRET_KEY doit être défini avec une valeur forte et unique en production. '
+        'Générez-en une avec : python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"'
+    )
 SECRET_KEY = _secret
 
 DEBUG = env_bool('DJANGO_DEBUG', False)
@@ -56,9 +54,26 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     X_FRAME_OPTIONS = 'DENY'
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_CONTENT_TYPE_OPTIONS = 'nosniff'
     SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Content-Security-Policy – active en production (DEBUG=False) par défaut,
+# ou quand CSP_ENABLED=True explicitement (utile pour tester en dev).
+CSP_ENABLED = env_bool('DJANGO_CSP_ENABLED', not DEBUG)
+
+CONTENT_SECURITY_POLICY = {
+    "default-src": "'self'",
+    "script-src": "'self' __NONCE__",
+    "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src": "'self' data: https://fonts.gstatic.com",
+    "img-src": "'self' data: https://via.placeholder.com https://*.tile.openstreetmap.org",
+    "connect-src": "'self' ws: wss:",
+    "object-src": "'none'",
+    "base-uri": "'self'",
+    "frame-ancestors": "'none'",
+    "form-action": "'self'",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -66,6 +81,7 @@ if not DEBUG:
 # ---------------------------------------------------------------------------
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -99,16 +115,26 @@ if _redis_url:
             'hosts': [_redis_url],
         },
     }
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': [_redis_url],
+            'KEY_PREFIX': 'ecommerce',
+        },
+    }
 elif not DEBUG:
     import logging
     logging.getLogger('django').warning(
         'REDIS_URL non défini en production. '
-        'Les notifications WebSocket ne fonctionneront que sur un seul worker. '
+        'Les notifications WebSocket ne fonctionneront que sur un seul worker '
+        'et les rate-limits ne seront pas partagés entre workers. '
         'Définissez REDIS_URL pour un fonctionnement multi-worker.'
     )
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'ecommerce.middleware.CSPMiddleware',
+    'ecommerce.middleware.Handle404Middleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -130,6 +156,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
+                'ecommerce.middleware.csp_nonce',
             ],
         },
     },
