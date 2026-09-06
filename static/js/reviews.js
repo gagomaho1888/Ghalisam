@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var imageHtml = '';
         if (review.image_url) {
-            imageHtml = '<img src="' + escapeHtml(review.image_url) + '" alt="Photo avis" class="review-image-display" onclick="window.open(this.src)">';
+            imageHtml = '<img src="' + escapeHtml(review.image_url) + '" alt="Photo avis" class="review-image-display review-zoom">';
         }
 
         var responseHtml = '';
@@ -172,6 +172,13 @@ document.addEventListener('DOMContentLoaded', function () {
         div.textContent = text;
         return div.innerHTML;
     }
+
+    /* ===== Image Zoom ===== */
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('review-zoom')) {
+            window.open(e.target.getAttribute('src'));
+        }
+    });
 
     /* ===== Edit Review Toggle ===== */
     var editBtns = document.querySelectorAll('.edit-review-btn');

@@ -1,17 +1,18 @@
 import math
 import logging
+import os
 import requests
 from decimal import Decimal
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
-from django.db.models import Q, Avg, Count, F
+from django.db.models import Q, Avg, Count
 from django.db import transaction
 from django.contrib.postgres.search import TrigramSimilarity
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.core.files.storage import default_storage
-from .models import Article, ArticleVariant, NewsletterSubscriber, Review
+from .models import Article, NewsletterSubscriber, Review
 from .forms import ReviewForm
 from django.urls import reverse
 from .cart import Cart
@@ -20,8 +21,12 @@ from django.contrib import messages
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.views.decorators.cache import cache_page
-from django.core.cache import cache
+from django.core.mail import send_mail
+from django.conf import settings
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from Utilisateurs.models import Commande
+from ecommerce.security import get_client_ip, check_rate_limit, record_attempt
 
 logger = logging.getLogger('Articles')
 
@@ -75,7 +80,7 @@ def get_review_stats(article):
 
 def acceuil(request):
     articles = Article.objects.filter(disponible=True).prefetch_related('variantes')
-    articles = articles[:6]  # Limiter à 6 articles
+    articles = articles[:8]  # Limiter à 8 articles
     checkout_ticket = request.session.pop('checkout_ticket', None)
     return render(request, 'Articles/acceuil.html', {'articles': articles, 'checkout_ticket': checkout_ticket})
 
@@ -170,7 +175,7 @@ def add_to_cart(request):
             available_stock = article.stock - stock_in_cart
 
         if available_stock <= 0:
-            messages.warning(request, 'Ce produit est épuisé pour la taille sélectionnée.')
+            messages.warning(request, 'Cet article est épuisé pour la taille sélectionnée.')
             return redirect('produit_detail', article_id=article_id)
 
         if quantity > available_stock:
@@ -195,6 +200,56 @@ def _calculer_frais_livraison(distance_km):
     if distance_km <= 500:
         return Decimal('4000')
     return Decimal('5000')
+
+
+def _notifier_nouvelle_commande(ticket, user, delivery, total, item_descriptions):
+    admin_email = os.environ.get('ADMIN_EMAIL', '')
+    client_name = user.get_full_name() or user.username
+    articles_text = '\n'.join(f'  - {desc}' for desc in item_descriptions)
+    adresse = f"{delivery.get('ville', '')}, {delivery.get('pays', '')}"
+
+    message_text = (
+        f"Nouvelle commande !\n\n"
+        f"Ticket : {ticket}\n"
+        f"Client : {client_name}\n"
+        f"Telephone : {delivery.get('telephone', '')}\n"
+        f"Adresse : {adresse}\n"
+        f"Total : {total:,.0f} FCFA\n\n"
+        f"Articles :\n{articles_text}\n\n"
+        f"Connectez-vous au dashboard pour assigner un livreur."
+    )
+
+    try:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            'admin_notifications',
+            {
+                'type': 'nouvelle_commande_admin',
+                'ticket': ticket,
+                'client': client_name,
+                'telephone': delivery.get('telephone', ''),
+                'adresse': delivery.get('ville', ''),
+                'ville': delivery.get('ville', ''),
+                'pays': delivery.get('pays', ''),
+                'montant': f'{total:,.0f}',
+                'articles': '; '.join(item_descriptions),
+                'commande_id': 0,
+            }
+        )
+    except Exception as e:
+        logger.error("Erreur WebSocket notification admin: %s", e)
+
+    if admin_email:
+        try:
+            send_mail(
+                subject=f'Nouvelle commande {ticket} - Ghalisam Boutique',
+                message=message_text,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[admin_email],
+                fail_silently=True,
+            )
+        except Exception as e:
+            logger.error("Erreur email notification admin: %s", e)
 
 
 def commande(request):
@@ -250,7 +305,11 @@ def commande(request):
             distance_km = float(R * 2 * Decimal(str(math.atan2(math.sqrt(a), math.sqrt(1 - a)))))
             frais_livraison = _calculer_frais_livraison(distance_km)
 
-        total = cart.get_total_price()
+        total_articles = cart.get_total_price()
+        if total_articles > Decimal('50000'):
+            frais_livraison = Decimal('0')
+
+        total = total_articles
         total += frais_livraison
         ticket_code = f"TKT-{uuid4().hex[:8].upper()}"
         if request.user.is_authenticated:
@@ -284,20 +343,6 @@ def commande(request):
 
             try:
                 with transaction.atomic():
-                    for article, variant, qty in cart_items_data:
-                        if variant:
-                            updated = ArticleVariant.objects.filter(
-                                id=variant.id, stock__gte=qty
-                            ).update(stock=F('stock') - qty)
-                            if not updated:
-                                raise ValueError(f"Stock insuffisant pour {article.nom} {variant.taille}")
-                        else:
-                            updated = Article.objects.filter(
-                                id=article.id, stock__gte=qty
-                            ).update(stock=F('stock') - qty)
-                            if not updated:
-                                raise ValueError(f"Stock insuffisant pour {article.nom}")
-
                     Commande.objects.create(
                         user=request.user,
                         ticket=ticket_code,
@@ -317,6 +362,9 @@ def commande(request):
 
             request.session['checkout_ticket'] = ticket_code
             cart.clear()
+
+            _notifier_nouvelle_commande(ticket_code, request.user, delivery, total_recalcule, item_descriptions)
+
             return redirect('acceuil')
         message = 'Connectez-vous pour enregistrer votre ticket dans votre profil.'
         return render(request, 'Articles/commande.html', {'cart': cart, 'delivery': delivery, 'message': message, 'total': total})
@@ -356,7 +404,19 @@ def update_cart(request):
                     new_q = int(request.POST.get('quantity', 1))
                 except ValueError:
                     new_q = qty
-                cart.update_quantity(key, new_q)
+                if new_q <= 0:
+                    cart.remove(key)
+                else:
+                    article_id = current.get('article_id')
+                    size = current.get('size', '')
+                    article = get_object_or_404(Article, id=article_id, disponible=True)
+                    variant = article.variantes.filter(taille=size).first() if size else None
+                    max_stock = variant.stock if variant else article.stock
+                    new_q = min(new_q, max_stock)
+                    if new_q <= 0:
+                        cart.remove(key)
+                    else:
+                        cart.update_quantity(key, new_q)
     return redirect('commande')
 
 
@@ -400,7 +460,7 @@ def add_review(request, article_id):
         return redirect('produit_detail', article_id=article_id)
 
     if Review.objects.filter(user=request.user, article=article).exists():
-        messages.error(request, 'Vous avez déjà laissé un avis sur ce produit.')
+        messages.error(request, 'Vous avez déjà laissé un avis sur cet article.')
         return redirect('produit_detail', article_id=article_id)
 
     form = ReviewForm(request.POST, request.FILES)
@@ -488,12 +548,17 @@ def get_reviews(request, article_id):
 # ---------------------------------------------------------------------------
 
 NOMINIM_URL = "https://nominatim.openstreetmap.org"
-HEADERS = {"User-Agent": "GalishamBoutique/1.0 (ecommerce)"}
+HEADERS = {"User-Agent": "GhalisamBoutique/1.0 (ecommerce)"}
 GEOCODE_CACHE_TTL = 60 * 60  # 1 heure
 
 
 @cache_page(GEOCODE_CACHE_TTL)
 def geocode_search(request):
+    ip = get_client_ip(request)
+    rl_key = f'geocode_search:{ip}'
+    if not check_rate_limit(rl_key, max_attempts=30, window=60):
+        return JsonResponse({"error": "Trop de requêtes"}, status=429)
+    record_attempt(rl_key, window=60)
     q = request.GET.get("q", "").strip()
     if len(q) < 3:
         return JsonResponse({"error": "Requête trop courte"}, status=400)
@@ -515,6 +580,11 @@ def geocode_search(request):
 
 @cache_page(GEOCODE_CACHE_TTL)
 def geocode_reverse(request):
+    ip = get_client_ip(request)
+    rl_key = f'geocode_reverse:{ip}'
+    if not check_rate_limit(rl_key, max_attempts=30, window=60):
+        return JsonResponse({"error": "Trop de requêtes"}, status=429)
+    record_attempt(rl_key, window=60)
     lat = request.GET.get("lat", "").strip()
     lon = request.GET.get("lon", "").strip()
     if not lat or not lon:
@@ -557,7 +627,7 @@ def contact(request):
                 error = "Adresse email invalide."
                 return render(request, "Articles/contact.html", {"sent": sent, "error": error})
 
-            rl_key = f'contact:{request.META.get("REMOTE_ADDR", "unknown")}'
+            rl_key = f'contact:{get_client_ip(request)}'
             from django.core.cache import cache as _cache
             if _cache.get(rl_key):
                 error = "Trop de messages. Réessayez dans quelques minutes."
@@ -568,17 +638,20 @@ def contact(request):
                 "commande": "Commande",
                 "livraison": "Livraison",
                 "retour": "Retour / Échange",
-                "produit": "Produit",
+                "produit": "Article",
                 "partenariat": "Partenariat",
                 "autre": "Autre",
             }
             label = subject_labels.get(subject, "Autre")
-            fullname = fullname[:200]
+            import re as _re
+            # Nettoyer les caractères de contrôle (CRLF) pour empêcher l'injection d'en-têtes email.
+            _clean = lambda s: _re.sub(r'[\r\n\x00-\x08\x0b\x0c\x0e-\x1f]', '', s).strip()
+            fullname = _clean(fullname)[:200]
             message = message[:5000]
 
             send_mail(
                 subject=f"[Contact] {label} - {fullname}",
-                message=f"Nom : {fullname}\nEmail : {email}\nSujet : {label}\n\n{message}",
+                message=f"Nom : {fullname}\nEmail : {_clean(email)}\nSujet : {label}\n\n{message}",
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[settings.EMAIL_HOST_USER],
                 fail_silently=False,
@@ -606,6 +679,10 @@ def cookies(request):
 
 def mentions_legales(request):
     return render(request, "Articles/mentions_legales.html")
+
+
+def politique_confidentialite(request):
+    return render(request, "Articles/politique_confidentialite.html")
 
 
 def cookie_consent(request):

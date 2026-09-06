@@ -14,6 +14,10 @@ var notifBadge = document.getElementById('notifBadge');
 
 function fermerToast() { if (notifToast) notifToast.style.display = 'none'; }
 
+document.querySelectorAll('.toast-close').forEach(function (btn) {
+    btn.addEventListener('click', function () { fermerToast(); });
+});
+
 // ---- Synthèse vocale ----
 var voiceQueue = [];
 var speaking = false;
