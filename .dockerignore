@@ -1,0 +1,41 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+logs/
+*.log
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Git / Docker
+.git/
+.gitignore
+*.md
+
+# Tests & tooling
+.pytest_cache/
+.coverage
+htmlcov/
