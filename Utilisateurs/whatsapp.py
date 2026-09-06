@@ -1,17 +1,12 @@
 import logging
 import os
 import requests
-from django.conf import settings
+from ecommerce.settings import env_bool
 
 logger = logging.getLogger(__name__)
 
 WHATSAPP_API_VERSION = "v18.0"
 WHATSAPP_API_BASE = "https://graph.facebook.com"
-
-
-def _env_bool(key, default=False):
-    val = os.environ.get(key, str(default)).strip().lower()
-    return val in ("1", "true", "yes", "on")
 
 
 def envoyer_whatsapp(destinataire: str, message: str) -> None:
@@ -56,7 +51,7 @@ def notifier_livreur_whatsapp(telephone: str, commande) -> None:
         logger.warning("Telephone invalide pour WhatsApp : %s", telephone)
         return
 
-    if _env_bool("WHATSAPP_DISABLE", False):
+    if env_bool("WHATSAPP_DISABLE", False):
         logger.info("WhatsApp desactive via WHATSAPP_DISABLE=True")
         return
 
