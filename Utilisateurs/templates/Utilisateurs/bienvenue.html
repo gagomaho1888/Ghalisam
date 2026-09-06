@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenue - Galisham Boutique</title>
+    <title>Bienvenue - Ghalisam Boutique</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -160,7 +160,7 @@
 
 <div class="welcome-screen" id="welcome">
     <div class="content">
-        <div class="logo-text">Galisham</div>
+        <div class="logo-text">Ghalisam</div>
         <div class="welcome-line"></div>
         <div class="welcome-msg">Bienvenue</div>
         <div class="username">{{ prenom }}</div>
@@ -168,7 +168,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="{{ csp_nonce }}">
     setTimeout(function() {
         document.getElementById('welcome').classList.add('exit');
     }, 3000);

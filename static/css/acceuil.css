@@ -24,6 +24,37 @@
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,.05);
 }
+.reviews-section {
+    transition: transform 0.4s ease;
+}
+.reviews-section:hover {
+    transform: translateY(-2px);
+}
+.reviews-section .review-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.reviews-section:hover .review-card:nth-child(1) {
+    animation: reviewPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0s both;
+}
+.reviews-section:hover .review-card:nth-child(2) {
+    animation: reviewPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+.reviews-section:hover .review-card:nth-child(3) {
+    animation: reviewPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+@keyframes reviewPop {
+    0% { transform: translateY(0) scale(1); box-shadow: 0 5px 15px rgba(0,0,0,.05); }
+    50% { transform: translateY(-10px) scale(1.03); box-shadow: 0 15px 30px rgba(58,123,213,0.25); }
+    100% { transform: translateY(-6px) scale(1); box-shadow: 0 10px 25px rgba(0,0,0,.12); }
+}
+.reviews-section:hover .review-card svg polygon,
+.reviews-section:hover .review-card svg {
+    animation: starPulse 0.6s ease 0.2s;
+}
+@keyframes starPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.35); }
+}
 .ticket-banner {
     background: linear-gradient(90deg,#00d2ff,#3a7bd5);
     color: #fff;
@@ -49,6 +80,7 @@
     text-align: center;
 }
 .section-title {
+    font-family: 'Playfair Display', Georgia, serif;
     font-size: 24px;
     font-weight: 700;
     color: #111;
@@ -85,6 +117,26 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
     border-color: #3a7bd5;
 }
+.feature-card-liv {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    min-height: 280px;
+}
+.feature-card-liv .liv-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+.feature-card-liv .liv-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
 .feature-icon-wrapper {
     width: 60px;
     height: 60px;
@@ -120,7 +172,57 @@
     margin: 40px 0 20px;
     letter-spacing: 0.5px;
 }
+.advantages-section {
+    margin: 60px 0;
+    text-align: center;
+}
+.advantages-container {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.advantage-card {
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 16px;
+    padding: 30px 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    box-sizing: border-box;
+}
+.advantage-media {
+    width: 100%;
+}
+.advantage-img {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.advantage-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+.advantage-caption {
+    margin: 18px 0 0;
+    font-size: 15px;
+    text-align: center;
+    line-height: 1.5;
+}
+.adv-title {
+    font-weight: 700;
+    color: #111;
+}
+.adv-desc {
+    font-weight: 400;
+    color: #64748b;
+}
 @media (max-width: 768px) {
-    .features-container { gap: 16px; }
     .feature-card { max-width: 100%; }
+    .advantage-card { max-width: 100%; }
 }

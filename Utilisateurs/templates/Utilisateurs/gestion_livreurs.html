@@ -17,6 +17,7 @@
         <a href="{% url 'admin_dashboard' %}">Tableau de bord</a>
         <a href="{% url 'toutes_commandes' %}">Commandes</a>
         <a href="{% url 'gestion_livreurs' %}" class="active">Livreurs</a>
+        <a href="{% url 'gestion_boutique' %}">Gestion boutique</a>
         <a href="/admin/">Django Admin</a>
         <a href="{% url 'acceuil' %}">Retour au site</a>
     </aside>
@@ -63,7 +64,7 @@
                                 {% if livreur.est_actif %}Désactiver{% else %}Activer{% endif %}
                             </button>
                         </form>
-                        <form method="post" action="{% url 'delete_livreur' livreur.id %}" style="display:inline" onsubmit="return confirm('Supprimer ce livreur ?')">
+                        <form method="post" action="{% url 'delete_livreur' livreur.id %}" style="display:inline" data-confirm="Supprimer ce livreur ?">
                             {% csrf_token %}
                             <button type="submit" class="btn-sm btn-danger">Supprimer</button>
                         </form>
@@ -76,5 +77,14 @@
         </table>
     </main>
 </div>
+<script nonce="{{ csp_nonce }}">
+    document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            if (!confirm(form.getAttribute('data-confirm'))) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
 </body>
 </html>

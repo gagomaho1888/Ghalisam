@@ -31,7 +31,7 @@
                     <strong id="toastTitle">Nouvelle commande</strong>
                     <span id="toastMessage"></span>
                 </div>
-                <button onclick="fermerToast()" class="toast-close">&times;</button>
+                <button class="toast-close" type="button">&times;</button>
             </div>
         </div>
 
@@ -59,7 +59,7 @@
                     <th>Client</th>
                     <th>Téléphone</th>
                     <th>Adresse</th>
-                    <th>Produits</th>
+                    <th>Articles</th>
                     <th>Montant</th>
                     <th>Date</th>
                     <th>Paiement</th>
@@ -116,7 +116,7 @@
 </div>
 
 <script src="{% static 'js/notifications.js' %}"></script>
-<script>
+<script nonce="{{ csp_nonce }}">
     var toastTitle = document.getElementById('toastTitle');
     var toastMessage = document.getElementById('toastMessage');
 

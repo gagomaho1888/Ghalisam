@@ -8,6 +8,27 @@
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/admin.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <style>
+        .notif-panel{position:fixed;top:80px;right:20px;width:380px;max-height:80vh;overflow-y:auto;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:9999;display:none;border:1px solid #e2e8f0}
+        .notif-panel.show{display:block}
+        .notif-header{padding:14px 18px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+        .notif-header h3{margin:0;font-size:15px;color:#111}
+        .notif-close{background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8}
+        .notif-item{padding:14px 18px;border-bottom:1px solid #f1f5f9;animation:slideIn .3s ease}
+        .notif-item:last-child{border-bottom:none}
+        .notif-item .ticket{font-weight:700;color:#3a7bd5}
+        .notif-item .client{color:#555;font-size:13px}
+        .notif-item .montant{color:#059669;font-weight:600;font-size:13px}
+        .notif-item .articles{color:#777;font-size:12px;margin-top:4px}
+        .notif-item .date{color:#94a3b8;font-size:11px;margin-top:4px}
+        .notif-badge{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;font-size:11px;font-weight:700;border-radius:50%;min-width:20px;height:20px;display:flex;align-items:center;justify-content:center;display:none}
+        .notif-badge.show{display:flex}
+        .bell-btn{position:relative;background:none;border:none;cursor:pointer;padding:8px}
+        .bell-btn svg{width:22px;height:22px;stroke:#64748b;fill:none;stroke-width:2}
+        @keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+        .sound-btn{background:none;border:1px solid #e2e8f0;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;color:#555}
+        .sound-btn.active{background:#3a7bd5;color:#fff;border-color:#3a7bd5}
+    </style>
 </head>
 <body>
 {% include 'Articles/nav.html' %}
@@ -17,11 +38,32 @@
         <a href="{% url 'admin_dashboard' %}" class="active">Tableau de bord</a>
         <a href="{% url 'toutes_commandes' %}">Commandes</a>
         <a href="{% url 'gestion_livreurs' %}">Livreurs</a>
+        <a href="{% url 'gestion_boutique' %}">Gestion boutique</a>
         <a href="/admin/">Django Admin</a>
         <a href="{% url 'acceuil' %}">Retour au site</a>
     </aside>
     <main class="admin-main">
-        <h1>Tableau de bord</h1>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h1>Tableau de bord</h1>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="sound-btn" id="soundToggle" title="Son des notifications">Son ON</button>
+                <button class="bell-btn" id="bellBtn" title="Notifications">
+                    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span class="notif-badge" id="notifBadge">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="notif-panel" id="notifPanel">
+            <div class="notif-header">
+                <h3>Nouvelles commandes</h3>
+                <button class="notif-close" id="notifClose">&times;</button>
+            </div>
+            <div id="notifList">
+                <p style="padding:20px;text-align:center;color:#94a3b8;font-size:13px;">Aucune notification</p>
+            </div>
+        </div>
+
         {% if messages %}
         <div class="admin-messages">
             {% for msg in messages %}
@@ -68,7 +110,7 @@
                     <th>Date</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="commandesTableBody">
                 {% for cmd in commandes %}
                 <tr>
                     <td>{{ cmd.ticket }}</td>
@@ -85,5 +127,85 @@
         </table>
     </main>
 </div>
+
+<script nonce="{{ csp_nonce }}">
+(function(){
+    var soundEnabled = true;
+    var notifCount = 0;
+    var notifPanel = document.getElementById('notifPanel');
+    var notifBadge = document.getElementById('notifBadge');
+    var notifList = document.getElementById('notifList');
+    var bellBtn = document.getElementById('bellBtn');
+    var notifClose = document.getElementById('notifClose');
+    var soundToggle = document.getElementById('soundToggle');
+    var audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbsGczIj2NysijaTkmTaC92OakVzM/P3yT0teleiqNL3aGw9d4d2JMj7fE3YhYXl2MsL3cZT87X5XFyt1wZF1lhJbA2GM8OlyRwMLccW9cZ4GHv9dpVFZckLG72GU9O16Ww8Laf3BdZ3+DutNoVVdcj6631WU9O1+WxMLafG9dZ36CudFoVVdcjqy00mU9O1+XxcPafG9dZ3+CutBoVVdcjauz0WU9O1+YxsTafG9dZ3+DutFoVVdcjKqxz2U9O1+Zx8TafG9dZ3+DutFoVVdcjKqxz2U9O1+Zx8TafG9dZ3+DutFoVVdcjKqxzw==');
+    soundToggle.addEventListener('click', function(){
+        soundEnabled = !soundEnabled;
+        soundToggle.textContent = soundEnabled ? 'Son ON' : 'Son OFF';
+        soundToggle.classList.toggle('active', soundEnabled);
+    });
+
+    bellBtn.addEventListener('click', function(){
+        notifPanel.classList.toggle('show');
+        if(notifPanel.classList.contains('show')){
+            notifCount = 0;
+            notifBadge.textContent = '0';
+            notifBadge.classList.remove('show');
+        }
+    });
+    notifClose.addEventListener('click', function(){
+        notifPanel.classList.remove('show');
+    });
+
+    function addNotification(data){
+        if(notifCount === 0) notifList.innerHTML = '';
+        notifCount++;
+        notifBadge.textContent = notifCount;
+        notifBadge.classList.add('show');
+        var now = new Date();
+        var time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+        var html = '<div class="notif-item">' +
+            '<div class="ticket">' + data.ticket + '</div>' +
+            '<div class="client">' + data.client + ' &mdash; ' + (data.telephone||'') + '</div>' +
+            '<div class="montant">' + data.montant + ' FCFA</div>' +
+            '<div class="articles">' + data.articles + '</div>' +
+            '<div class="date">' + time + '</div>' +
+            '</div>';
+        notifList.insertAdjacentHTML('afterbegin', html);
+
+        var enAttente = document.querySelector('.stat-card:nth-child(2) .stat-number');
+        if(enAttente) enAttente.textContent = parseInt(enAttente.textContent) + 1;
+        var total = document.querySelector('.stat-card:nth-child(1) .stat-number');
+        if(total) total.textContent = parseInt(total.textContent) + 1;
+
+        if(soundEnabled){
+            audio.currentTime = 0;
+            audio.play().catch(function(){});
+        }
+        if(Notification && Notification.permission === 'granted'){
+            new Notification('Nouvelle commande ' + data.ticket, {
+                body: data.client + ' - ' + data.montant + ' FCFA\n' + data.articles,
+                icon: '{% static "img/logo.png" %}'
+            });
+        }
+    }
+
+    var wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    var ws = new WebSocket(wsProtocol + window.location.host + '/ws/admin/notifications/');
+    ws.onmessage = function(e){
+        var data = JSON.parse(e.data);
+        if(data.type === 'nouvelle_commande'){
+            addNotification(data);
+        }
+    };
+    ws.onclose = function(){
+        setTimeout(function(){ location.reload(); }, 3000);
+    };
+
+    if(Notification && Notification.permission === 'default'){
+        Notification.requestPermission();
+    }
+})();
+</script>
 </body>
 </html>

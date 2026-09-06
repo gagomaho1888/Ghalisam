@@ -2,7 +2,7 @@
 {% load static %}
 {% load article_extras %}
 
-{% block title %}Produits - Galisham Boutique{% endblock %}
+{% block title %}Articles - Ghalisam Boutique{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/produits.css' %}">
@@ -49,6 +49,10 @@
 
                 <div class="product-content">
                     <h3 class="product-title">{{ article.nom }}</h3>
+                    <div class="product-meta">
+                        {% if article.couleur %}<span class="product-couleur" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:#64748b;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:999px;padding:3px 10px;font-weight:600;letter-spacing:.3px;"><span style="width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.12);display:inline-block;background:{{ article.couleur|couleur_hex }};box-shadow:0 1px 3px rgba(0,0,0,.15);"></span>{{ article.couleur }}</span>{% endif %}
+                        {% if article.marque %}<span class="product-marque" style="font-size:12px;color:#94a3b8;">{{ article.marque }}</span>{% endif %}
+                    </div>
 
                     <div class="product-details">
                         {% for variant in article.variantes.all %}
@@ -74,12 +78,12 @@
             </div>
             {% empty %}
                 <div class="empty-state">
-                    Aucun produit disponible.
+                    Aucun article disponible.
                 </div>
             {% endfor %}
 
             <div class="empty-state" id="jsEmptyState" style="display: none;">
-                Aucun produit ne correspond à vos critères.
+                Aucun article ne correspond à vos critères.
             </div>
 
         </div>

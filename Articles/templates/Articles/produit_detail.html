@@ -2,7 +2,7 @@
 {% load static %}
 {% load article_extras %}
 
-{% block title %}{{ article.nom }} - Galisham Boutique{% endblock %}
+{% block title %}{{ article.nom }} - Ghalisam Boutique{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/produit_detail.css' %}">
@@ -55,7 +55,7 @@
                     <button class="add-btn" type="submit">Ajouter au panier</button>
                 </form>
             {% else %}
-                <p class="out-of-stock">Ce produit est épuisé.</p>
+                <p class="out-of-stock">Cet article est épuisé.</p>
             {% endif %}
         {% else %}
             <p class="meta">Taille: {{ article.get_taille_display }}</p>
@@ -63,8 +63,12 @@
         {% endif %}
         <p class="price">{{ article.prix|price_fr }} FCFA</p>
         <p class="description">{{ article.description }}</p>
-        <p class="meta">Marque: {{ article.marque }}</p>
-        <a class="back-link" href="{% url 'produit_list' %}">← Retour aux produits</a>
+        <p class="meta">
+            {% if article.marque %}Marque: {{ article.marque }}{% endif %}
+            {% if article.marque and article.couleur %} &bull; {% endif %}
+            {% if article.couleur %}Couleur: <span style="display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:999px;padding:3px 10px;font-weight:600;"><span style="width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.12);display:inline-block;background:{{ article.couleur|couleur_hex }};box-shadow:0 1px 3px rgba(0,0,0,.15);"></span>{{ article.couleur }}</span>{% endif %}
+        </p>
+        <a class="back-link" href="{% url 'produit_list' %}">← Retour aux articles</a>
     </div>
 </div>
 
@@ -127,7 +131,7 @@
                     </div>
                     <p class="review-comment">{{ existing_review.comment }}</p>
                     {% if existing_review.image %}
-                        <img src="{{ existing_review.image.url }}" alt="Photo avis" class="review-image-display" onclick="window.open(this.src)">
+                        <img src="{{ existing_review.image.url }}" alt="Photo avis" class="review-image-display review-zoom">
                     {% endif %}
                     <div class="review-actions">
                         <button class="review-action-btn edit-review-btn" data-review-id="{{ existing_review.id }}">Modifier</button>
@@ -169,7 +173,7 @@
                                 <label for="star-{{ i }}" data-value="{{ i }}">★</label>
                             {% endfor %}
                         </div>
-                        <textarea name="comment" class="review-textarea" rows="4" placeholder="Partagez votre expérience avec ce produit..."></textarea>
+                        <textarea name="comment" class="review-textarea" rows="4" placeholder="Partagez votre expérience avec cet article..."></textarea>
                         <div class="review-image-upload">
                             <label for="review-image">
                                 📷 Ajouter une photo
@@ -215,7 +219,7 @@
                 </div>
                 <p class="review-comment">{{ review.comment }}</p>
                 {% if review.image %}
-                    <img src="{{ review.image.url }}" alt="Photo avis" class="review-image-display" onclick="window.open(this.src)">
+                    <img src="{{ review.image.url }}" alt="Photo avis" class="review-image-display review-zoom">
                 {% endif %}
                 {% if review.seller_response %}
                 <div class="seller-response">
