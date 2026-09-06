@@ -37,7 +37,7 @@ class Utilisateur(models.Model):
     ville = models.CharField(max_length=100, blank=True)
     pays = models.CharField(max_length=100, blank=True)
     code_postal = models.CharField(max_length=20, blank=True)
-    code_validation = models.CharField(max_length=20, blank=True, default='')
+    code_validation = models.CharField(max_length=64, blank=True, default='', help_text='Hash SHA-256 (HMAC) du code de validation.')
     email_verified = models.BooleanField(default=False)
     code_validation_expires = models.DateTimeField(null=True, blank=True)
 

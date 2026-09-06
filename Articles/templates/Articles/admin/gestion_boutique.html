@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gestion de la boutique</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <style>
+        .thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .thumb-ph { width: 50px; height: 50px; border-radius: 8px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
+        .badge-dispo { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .badge-dispo.yes { background: #d1fae5; color: #065f46; }
+        .badge-dispo.no { background: #fee2e2; color: #991b1b; }
+        .search-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+        .search-bar input, .search-bar select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem; }
+        .search-bar .btn-primary { padding: 8px 16px; }
+        .stock-cell { font-weight: 600; }
+    </style>
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+<div class="admin-wrapper">
+    <aside class="admin-sidebar">
+        <h3>Administration</h3>
+        <a href="{% url 'admin_dashboard' %}">Tableau de bord</a>
+        <a href="{% url 'toutes_commandes' %}">Commandes</a>
+        <a href="{% url 'gestion_livreurs' %}">Livreurs</a>
+        <a href="{% url 'gestion_boutique' %}" class="active">Gestion boutique</a>
+        <a href="/admin/">Django Admin</a>
+        <a href="{% url 'acceuil' %}">Retour au site</a>
+    </aside>
+    <main class="admin-main">
+        <div class="admin-header">
+            <h1>Gestion de la boutique</h1>
+            <a href="{% url 'ajouter_article' %}" class="btn-primary">+ Ajouter un article</a>
+        </div>
+
+        {% if messages %}
+        <div class="admin-messages">
+            {% for msg in messages %}
+            <div class="admin-alert {{ msg.tags }}">{{ msg }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form class="search-bar" method="GET" action="{% url 'gestion_boutique' %}">
+            <input type="text" name="q" value="{{ query }}" placeholder="Rechercher par nom...">
+            <select name="categorie">
+                <option value="">Toutes les catégories</option>
+                <option value="haut" {% if categorie == 'haut' %}selected{% endif %}>Vêtement Haut</option>
+                <option value="bas" {% if categorie == 'bas' %}selected{% endif %}>Vêtement Bas</option>
+                <option value="chaussure" {% if categorie == 'chaussure' %}selected{% endif %}>Chaussure</option>
+            </select>
+            <button type="submit" class="btn-primary">Filtrer</button>
+        </form>
+
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Nom</th>
+                    <th>Catégorie</th>
+                    <th>Prix</th>
+                    <th>Stock</th>
+                    <th>Couleur</th>
+                    <th>Marque</th>
+                    <th>Disponible</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in articles %}
+                <tr>
+                    <td>
+                        {% if article.image %}
+                            <img src="{{ article.image.url }}" class="thumb" alt="{{ article.nom }}">
+                        {% else %}
+                            <div class="thumb-ph">🛒</div>
+                        {% endif %}
+                    </td>
+                    <td>{{ article.nom }}</td>
+                    <td>{{ article.get_categorie_display }}</td>
+                    <td>{{ article.prix|floatformat:0 }} FCFA</td>
+                    <td class="stock-cell">{{ article.total_stock }}</td>
+                    <td>{{ article.couleur|default:"—" }}</td>
+                    <td>{{ article.marque|default:"—" }}</td>
+                    <td>
+                        <span class="badge-dispo {% if article.disponible %}yes{% else %}no{% endif %}">
+                            {{ article.disponible|yesno:"Oui,Non" }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'modifier_article' article.id %}" class="btn-sm">Modifier</a>
+                            <form method="post" action="{% url 'basculer_disponible' article.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-sm btn-warning">{{ article.disponible|yesno:"Masquer,Afficher" }}</button>
+                            </form>
+                            <form method="post" action="{% url 'supprimer_article' article.id %}" style="display:inline;" data-confirm="Supprimer cet article ?">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-sm btn-danger">Supprimer</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="9" class="empty">Aucun article trouvé.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            {% if articles.has_previous %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if categorie %}&categorie={{ categorie }}{% endif %}" class="page-link">&laquo; Première</a>
+                <a href="?page={{ articles.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categorie %}&categorie={{ categorie }}{% endif %}" class="page-link">‹ Précédente</a>
+            {% endif %}
+            <span class="page-current">Page {{ articles.number }} / {{ articles.paginator.num_pages }}</span>
+            {% if articles.has_next %}
+                <a href="?page={{ articles.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categorie %}&categorie={{ categorie }}{% endif %}" class="page-link">Suivante ›</a>
+                <a href="?page={{ articles.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if categorie %}&categorie={{ categorie }}{% endif %}" class="page-link">Dernière &raquo;</a>
+            {% endif %}
+        </div>
+    </main>
+</div>
+<script nonce="{{ csp_nonce }}">
+    document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            if (!confirm(form.getAttribute('data-confirm'))) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+</body>
+</html>

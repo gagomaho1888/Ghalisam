@@ -1,0 +1,230 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - {{ titre }}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <style>
+        .article-form { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 24px; max-width: 720px; margin-top: 16px; }
+        .article-form label { display: block; font-size: 0.85rem; color: #475569; margin: 12px 0 4px; font-weight: 600; }
+        .article-form input[type="text"], .article-form input[type="number"], .article-form textarea, .article-form select, .article-form input[type="file"] { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; box-sizing: border-box; }
+        .article-form input:focus, .article-form textarea:focus, .article-form select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+        .article-form .error { color: #dc2626; font-size: 0.8rem; margin-top: 2px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+        .form-row { margin-bottom: 4px; }
+        .check-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+        .check-row input { width: auto; }
+        .check-row label { margin: 0; }
+        .variant-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-top: 10px; }
+        .variant-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; align-items: end; }
+        .variant-row label { margin-top: 0; }
+        .variant-remove { display: inline-block; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
+        .add-variant { display: inline-block; margin-top: 12px; background: #e2e8f0; color: #1e293b; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; font-size: 0.85rem; }
+        .add-variant:hover { background: #cbd5e1; }
+        .section-title { font-size: 1rem; color: #1e293b; margin: 24px 0 4px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; }
+        .btn { margin-top: 20px; }
+        .current-img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-top: 8px; border: 1px solid #e2e8f0; }
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #475569; font-size: 0.85rem; margin-top: 12px !important; }
+        .checkbox-label input { width: 16px; height: 16px; }
+    </style>
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+<div class="admin-wrapper">
+    <aside class="admin-sidebar">
+        <h3>Administration</h3>
+        <a href="{% url 'admin_dashboard' %}">Tableau de bord</a>
+        <a href="{% url 'toutes_commandes' %}">Commandes</a>
+        <a href="{% url 'gestion_livreurs' %}">Livreurs</a>
+        <a href="{% url 'gestion_boutique' %}" class="active">Gestion boutique</a>
+        <a href="/admin/">Django Admin</a>
+        <a href="{% url 'acceuil' %}">Retour au site</a>
+    </aside>
+    <main class="admin-main">
+        <div class="admin-header">
+            <h1>{{ titre }}</h1>
+            <a href="{% url 'gestion_boutique' %}" class="btn-cancel" style="margin:0;">← Retour</a>
+        </div>
+
+        {% if messages %}
+        <div class="admin-messages">
+            {% for msg in messages %}
+            <div class="admin-alert {{ msg.tags }}">{{ msg }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if form.errors %}
+        <div class="admin-messages">
+            {% for field, errors in form.errors.items %}
+                {% for e in errors %}
+                    <div class="admin-alert error">{{ field|title }} : {{ e }}</div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" class="article-form" id="articleForm">
+            {% csrf_token %}
+
+            <h3 class="section-title">Informations de l'article</h3>
+
+            <div class="form-row">
+                <label for="id_nom">Nom de l'article *</label>
+                <input type="text" name="nom" id="id_nom" value="{{ form.nom.value|default:'' }}" required>
+            </div>
+
+            <div class="form-row">
+                <label for="id_slug">Slug (laisser vide pour auto-générer)</label>
+                <input type="text" name="slug" id="id_slug" value="{{ form.slug.value|default:'' }}">
+            </div>
+
+            <div class="form-grid">
+                <div class="form-row">
+                    <label for="id_categorie">Catégorie</label>
+                    <select name="categorie" id="id_categorie">
+                        {% for value, label in form.fields.categorie.choices %}
+                            <option value="{{ value }}" {% if form.categorie.value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="id_prix">Prix (FCFA) *</label>
+                    <input type="number" name="prix" id="id_prix" step="0.01" value="{{ form.prix.value|default:'' }}" required>
+                </div>
+                <div class="form-row">
+                    <label for="id_stock">Stock *</label>
+                    <input type="number" name="stock" id="id_stock" min="0" value="{{ form.stock.value|default:'0' }}">
+                </div>
+                <div class="form-row">
+                    <label for="id_taille">Taille par défaut</label>
+                    <select name="taille" id="id_taille">
+                        <option value="" {% if not form.taille.value %}selected{% endif %}>Aucune</option>
+                        {% for value, label in form.fields.taille.choices %}
+                            <option value="{{ value }}" {% if form.taille.value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="id_couleur">Couleur</label>
+                    <input type="text" name="couleur" id="id_couleur" value="{{ form.couleur.value|default:'' }}" placeholder="ex: Noir, Bleu, Vert...">
+                </div>
+                <div class="form-row">
+                    <label for="id_marque">Marque</label>
+                    <input type="text" name="marque" id="id_marque" value="{{ form.marque.value|default:'' }}">
+                </div>
+                <div class="form-row">
+                    <label for="id_poids">Poids (kg)</label>
+                    <input type="number" name="poids" id="id_poids" step="0.01" value="{{ form.poids.value|default:'' }}">
+                </div>
+                <div class="form-row checkbox-label">
+                    <input type="checkbox" name="disponible" id="id_disponible" {% if form.disponible.value %}checked{% endif %}>
+                    <label for="id_disponible">Disponible à la vente</label>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label for="id_description">Description</label>
+                <textarea name="description" id="id_description" rows="4">{{ form.description.value|default:'' }}</textarea>
+            </div>
+
+            <div class="form-row">
+                <label for="id_image">Image de l'article</label>
+                <input type="file" name="image" id="id_image" accept="image/*">
+                {% if article and article.image %}
+                    <img src="{{ article.image.url }}" class="current-img" alt="Image actuelle">
+                {% endif %}
+            </div>
+
+            <h3 class="section-title">Variations de taille (stock par taille)</h3>
+            <div id="variantContainer">
+                {% for vf in variantes %}
+                <div class="variant-card">
+                    <input type="hidden" name="variant_id" value="{{ vf.instance.id|default:'' }}">
+                    <div class="variant-row">
+                        <div>
+                            <label>Taille</label>
+                            <select name="variant_taille">
+                                <option value="">— Choisir —</option>
+                                {% for value, label in form.fields.taille.choices %}
+                                    <option value="{{ value }}" {% if vf.instance.taille == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label>Couleur</label>
+                            <input type="text" name="variant_couleur" value="{{ vf.instance.couleur|default:'' }}">
+                        </div>
+                        <div>
+                            <label>Stock</label>
+                            <input type="number" name="variant_stock" min="0" value="{{ vf.instance.stock|default:'0' }}">
+                        </div>
+                    </div>
+                    <button type="button" class="variant-remove">Supprimer cette variante</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="add-variant" id="addVariant">+ Ajouter une variante</button>
+
+            <div>
+                <button type="submit" class="btn-primary btn">Enregistrer</button>
+                <a href="{% url 'gestion_boutique' %}" class="btn-cancel">Annuler</a>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script nonce="{{ csp_nonce }}">
+(function(){
+    var container = document.getElementById('variantContainer');
+    var addBtn = document.getElementById('addVariant');
+
+    function tailleOptions(selected){
+        var opts = '<option value="">— Choisir —</option>';
+        {% for value, label in form.fields.taille.choices %}
+            opts += '<option value="{{ value }}"' + (selected === '{{ value }}' ? ' selected' : '') + '>{{ label }}</option>';
+        {% endfor %}
+        return opts;
+    }
+
+    function createVariantCard(){
+        var div = document.createElement('div');
+        div.className = 'variant-card';
+        div.innerHTML = '<input type="hidden" name="variant_id" value="">' +
+            '<div class="variant-row">' +
+                '<div><label>Taille</label><select name="variant_taille">' + tailleOptions('') + '</select></div>' +
+                '<div><label>Couleur</label><input type="text" name="variant_couleur" value=""></div>' +
+                '<div><label>Stock</label><input type="number" name="variant_stock" min="0" value="0"></div>' +
+            '</div>' +
+            '<button type="button" class="variant-remove">Supprimer cette variante</button>';
+        return div;
+    }
+
+    addBtn.addEventListener('click', function(){
+        container.appendChild(createVariantCard());
+    });
+
+    container.addEventListener('click', function(e){
+        if(e.target.classList.contains('variant-remove')){
+            e.target.closest('.variant-card').remove();
+        }
+    });
+
+    document.getElementById('id_nom').addEventListener('input', function(){
+        var slugField = document.getElementById('id_slug');
+        if(!slugField.value || slugField.dataset.auto === '1'){
+            var slug = this.value.toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)+/g, '');
+            slugField.value = slug;
+            slugField.dataset.auto = '1';
+        }
+    });
+})();
+</script>
+</body>
+</html>

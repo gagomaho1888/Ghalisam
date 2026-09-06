@@ -5,8 +5,13 @@ from Utilisateurs import views as user_views
 from Utilisateurs import admin_views
 from Utilisateurs import livreur_views
 from Utilisateurs import api_views
+from Articles import boutique_views
 from django.conf import settings
 from django.conf.urls.static import static
+from . import error_views
+
+handler404 = 'ecommerce.error_views.page_404'
+handler500 = 'ecommerce.error_views.page_500'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,6 +34,12 @@ urlpatterns = [
     path('admin-dashboard/livreurs/<int:livreur_id>/supprimer/', admin_views.delete_livreur, name='delete_livreur'),
     path('admin-dashboard/commandes/', admin_views.toutes_commandes, name='toutes_commandes'),
     path('admin-dashboard/commandes/<int:commande_id>/attribuer/', admin_views.attribuer_commande, name='attribuer_commande'),
+
+    path('admin-dashboard/boutique/', boutique_views.gestion_boutique, name='gestion_boutique'),
+    path('admin-dashboard/boutique/ajouter/', boutique_views.ajouter_article, name='ajouter_article'),
+    path('admin-dashboard/boutique/<int:article_id>/modifier/', boutique_views.modifier_article, name='modifier_article'),
+    path('admin-dashboard/boutique/<int:article_id>/supprimer/', boutique_views.supprimer_article, name='supprimer_article'),
+    path('admin-dashboard/boutique/<int:article_id>/disponible/', boutique_views.basculer_disponible, name='basculer_disponible'),
 
     path('livreur/', livreur_views.livreur_dashboard, name='livreur_dashboard'),
     path('livreur/commandes/', livreur_views.livreur_commandes, name='livreur_commandes'),

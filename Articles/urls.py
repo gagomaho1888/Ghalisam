@@ -23,5 +23,6 @@ urlpatterns = [
     path('cgv/', views.cgv, name='cgv'),
     path('cookies/', views.cookies, name='cookies'),
     path('mentions-legales/', views.mentions_legales, name='mentions_legales'),
+    path('politique-confidentialite/', views.politique_confidentialite, name='politique_confidentialite'),
     path('cookie-consent/', views.cookie_consent, name='cookie_consent'),
 ]

@@ -61,6 +61,7 @@ class Article(models.Model):
         blank=True,
         null=True,
     )
+    couleur = models.CharField(max_length=50, blank=True, default='')
     date_creation = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)
 
@@ -84,10 +85,11 @@ class Article(models.Model):
 class ArticleVariant(models.Model):
     article = models.ForeignKey(Article, related_name='variantes', on_delete=models.CASCADE)
     taille = models.CharField(max_length=4, choices=Article.TailleChoices.choices)
+    couleur = models.CharField(max_length=50, blank=True, default='')
     stock = models.PositiveIntegerField(default=0)
 
     class Meta:
-        unique_together = ('article', 'taille')
+        unique_together = ('article', 'taille', 'couleur')
         verbose_name = 'Variation de taille'
         verbose_name_plural = 'Variations de taille'
 
@@ -96,7 +98,8 @@ class ArticleVariant(models.Model):
         return _stock_label(self.stock)
 
     def __str__(self):
-        return f"{self.article.nom} - {self.get_taille_display()} ({self.stock})"
+        suffix = f" - {self.couleur}" if self.couleur else ''
+        return f"{self.article.nom} - {self.get_taille_display()}{suffix} ({self.stock})"
 
 
 class NewsletterSubscriber(models.Model):
