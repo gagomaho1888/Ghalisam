@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: site-ecommerce
+    runtime: docker
+    plan: free
+    repo: https://github.com/gagomaho1888/site_ecommerce.git
+    branch: main
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DEFAULT_FILE_STORAGE
+        value: "dbfiles.storage.DatabaseFileStorage"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "site-ecommerce.onrender.com"
+      - key: EMAIL_HOST_USER
+        value: "gagomaho18@gmail.com"
+      - key: EMAIL_HOST_PASSWORD
+        sync: false

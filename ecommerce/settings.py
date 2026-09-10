@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'channels',
     'Articles',
     'Utilisateurs',
+    'dbfiles',
 ]
 
 ASGI_APPLICATION = 'ecommerce.asgi.application'
@@ -169,16 +170,30 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 # Database
 # ---------------------------------------------------------------------------
 
-DATABASES = {
-    'default': {
+import dj_database_url
+
+DATABASES = {}
+_db_url = env_str('DATABASE_URL')
+if _db_url:
+    DATABASES['default'] = dj_database_url.parse(
+        _db_url,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+    # Neon impose le SSL : on force sslmode=require si absent de l'URL
+    DATABASES['default'].setdefault('OPTIONS', {})
+    if not any(opt.startswith('sslmode') for opt in DATABASES['default']['OPTIONS']):
+        DATABASES['default']['OPTIONS']['sslmode'] = 'require'
+else:
+    DATABASES['default'] = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': env_str('DB_NAME', 'ecommerce'),
         'USER': env_str('DB_USER', 'postgres'),
         'PASSWORD': env_str('DB_PASSWORD', 'change-me' if env_bool('DJANGO_DEBUG', False) else ''),
         'HOST': env_str('DB_HOST', 'localhost'),
         'PORT': env_str('DB_PORT', '5432'),
+        'OPTIONS': {'sslmode': env_str('DB_SSLMODE', 'prefer')},
     }
-}
 
 
 # ---------------------------------------------------------------------------
@@ -229,6 +244,22 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Stockage des fichiers uploadés.
+# - Local : disque (FileSystemStorage), comportement actuel.
+# - Render/Neon : dans PostgreSQL via "dbfiles.storage.DatabaseFileStorage"
+#   (le disque de Render est éphémère, il est effacé à chaque déploiement).
+STORAGES = {
+    'default': {
+        'BACKEND': env_str(
+            'DEFAULT_FILE_STORAGE',
+            'django.core.files.storage.FileSystemStorage',
+        ),
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
 
 
 # ---------------------------------------------------------------------------

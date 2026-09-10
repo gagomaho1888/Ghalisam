@@ -9,6 +9,7 @@ from Articles import boutique_views
 from django.conf import settings
 from django.conf.urls.static import static
 from . import error_views
+from dbfiles import views as dbfiles_views
 
 handler404 = 'ecommerce.error_views.page_404'
 handler500 = 'ecommerce.error_views.page_500'
@@ -48,6 +49,8 @@ urlpatterns = [
     path('api/notifications/', api_views.api_notifications, name='api_notifications'),
     path('api/notifications/lues/', api_views.api_notifications_lues, name='api_notifications_lues'),
     path('api/notifications/non-lues/', api_views.api_notifications_non_lues_count, name='api_notifications_non_lues_count'),
+
+    path('db-files/<path:path>', dbfiles_views.serve_file, name='db_file'),
 ]
 
 # Media files : servi par Django en dev, par nginx en prod.
