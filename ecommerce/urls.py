@@ -49,8 +49,6 @@ urlpatterns = [
     path('api/notifications/', api_views.api_notifications, name='api_notifications'),
     path('api/notifications/lues/', api_views.api_notifications_lues, name='api_notifications_lues'),
     path('api/notifications/non-lues/', api_views.api_notifications_non_lues_count, name='api_notifications_non_lues_count'),
-
-    path('db-files/<path:path>', dbfiles_views.serve_file, name='db_file'),
 ]
 
 # Media files : servi par Django en dev, par nginx en prod.
@@ -58,3 +56,11 @@ urlpatterns = [
 _serve_media = settings.DEBUG or os.environ.get('DJANGO_SERVE_MEDIA', 'False').strip().lower() in ('1', 'true', 'yes', 'on')
 if _serve_media:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# En production (Render), les fichiers sont stockés dans la base Neon :
+# on sert donc MEDIA_URL depuis la base.
+if 'dbfiles.storage.DatabaseFileStorage' in str(getattr(settings, 'STORAGES', {}).get('default', {}).get('BACKEND', '')):
+    urlpatterns += [
+        path(f'{settings.MEDIA_URL.lstrip("/")}<path:path>', dbfiles_views.serve_file, name='media_db_file'),
+        path('db-files/<path:path>', dbfiles_views.serve_file, name='db_file'),
+    ]

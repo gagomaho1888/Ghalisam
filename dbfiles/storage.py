@@ -1,5 +1,6 @@
 import mimetypes
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import Storage
 
@@ -39,4 +40,4 @@ class DatabaseFileStorage(Storage):
         return StoredFile.objects.get(path=name).size
 
     def url(self, name):
-        return f'/db-files/{name}'
+        return f'{settings.MEDIA_URL}{name}'
