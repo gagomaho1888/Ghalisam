@@ -134,6 +134,7 @@ elif not DEBUG:
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'ecommerce.middleware.CSPMiddleware',
     'ecommerce.middleware.Handle404Middleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -253,7 +254,9 @@ STORAGES = {
     'default': {
         'BACKEND': env_str(
             'DEFAULT_FILE_STORAGE',
-            'django.core.files.storage.FileSystemStorage',
+            # Sur Render : fichiers dans la base (disque éphémère).
+            # En local : disque, comportement actuel.
+            'dbfiles.storage.DatabaseFileStorage' if os.environ.get('RENDER') else 'django.core.files.storage.FileSystemStorage',
         ),
     },
     'staticfiles': {
