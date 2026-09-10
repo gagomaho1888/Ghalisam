@@ -3,7 +3,7 @@ services:
     name: site-ecommerce
     runtime: docker
     plan: free
-    repo: https://github.com/gagomaho1888/site_ecommerce.git
+    repo: https://github.com/gagomaho1888/Ghalisam.git
     branch: main
     dockerContext: .
     dockerfilePath: ./Dockerfile
