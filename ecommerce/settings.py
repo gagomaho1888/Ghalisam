@@ -264,6 +264,10 @@ STORAGES = {
     },
 }
 
+# Whitenoise : cache long pour les fichiers statiques et mediums
+WHITENOISE_MAX_AGE = 31536000
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ()
+
 
 # ---------------------------------------------------------------------------
 # Logging – indispensable en production
