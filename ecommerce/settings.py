@@ -109,13 +109,11 @@ def cloudinary_configured() -> bool:
         and env_str('CLOUDINARY_API_SECRET')
     )
 
+# Note : 'cloudinary' et 'cloudinary_storage' ne sont PAS dans INSTALLED_APPS.
+# Le stockage media fonctionne via STORAGES['default'] ; l'enregistrement des
+# apps surchargerait collectstatic avec une version incompatible avec Django 5.1+
+# (référence l'ancien réglage STATICFILES_STORAGE, supprimé).
 if cloudinary_configured():
-    INSTALLED_APPS = [
-        *INSTALLED_APPS[:INSTALLED_APPS.index('django.contrib.staticfiles')],
-        'cloudinary',
-        'cloudinary_storage',
-        *INSTALLED_APPS[INSTALLED_APPS.index('django.contrib.staticfiles'):],
-    ]
     # PREFIX='' => le public_id correspond directement au chemin (articles/...).
     # Les identifiants ne sont ajoutés que s'ils sont fournis individuellement :
     # avec uniquement CLOUDINARY_URL, le SDK cloudinary lit l'environnement seul
