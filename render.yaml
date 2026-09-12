@@ -16,7 +16,7 @@ services:
       - key: DJANGO_DEBUG
         value: "False"
       - key: DEFAULT_FILE_STORAGE
-        value: "cloudinary_storage.storage.MediaCloudinaryStorage"
+        value: "ecommerce.custom_storage.VersionlessMediaCloudinaryStorage"
       # Cloudinary : hébergement des images (hors Render/Neon).
       # Renseignez ces valeurs dans le dashboard Render (peut se résumer à CLOUDINARY_URL).
       - key: CLOUDINARY_URL

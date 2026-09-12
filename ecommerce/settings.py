@@ -291,7 +291,7 @@ def _default_file_storage_backend() -> str:
     if forced:
         return forced
     if cloudinary_configured():
-        return 'cloudinary_storage.storage.MediaCloudinaryStorage'
+        return 'ecommerce.custom_storage.VersionlessMediaCloudinaryStorage'
     if os.environ.get('RENDER'):
         return 'dbfiles.storage.DatabaseFileStorage'
     return 'django.core.files.storage.FileSystemStorage'
