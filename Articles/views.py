@@ -82,7 +82,25 @@ def acceuil(request):
     articles = Article.objects.filter(disponible=True).prefetch_related('variantes')
     articles = articles[:8]  # Limiter à 8 articles
     checkout_ticket = request.session.pop('checkout_ticket', None)
-    return render(request, 'Articles/acceuil.html', {'articles': articles, 'checkout_ticket': checkout_ticket})
+    return render(request, 'Articles/acceuil.html', {
+        'articles': articles,
+        'checkout_ticket': checkout_ticket,
+        'hero_image': media_exists_url('articles/chaussre_gucci.jpg'),
+        'advantage_images': {
+            'liv': media_exists_url('articles/liv.jpg'),
+            'marchandises': media_exists_url('articles/tet1_crop.jpg'),
+        },
+    })
+
+
+def media_exists_url(name):
+    """Renvoie l'URL du fichier média s'il existe (Cloudinary en prod, disque en dev)."""
+    try:
+        if default_storage.exists(name):
+            return default_storage.url(name)
+    except Exception:
+        pass
+    return None
 
 
 def produit_list(request):

@@ -16,7 +16,17 @@ services:
       - key: DJANGO_DEBUG
         value: "False"
       - key: DEFAULT_FILE_STORAGE
-        value: "dbfiles.storage.DatabaseFileStorage"
+        value: "cloudinary_storage.storage.MediaCloudinaryStorage"
+      # Cloudinary : hébergement des images (hors Render/Neon).
+      # Renseignez ces valeurs dans le dashboard Render (peut se résumer à CLOUDINARY_URL).
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
       - key: DJANGO_ALLOWED_HOSTS
         value: "site-ecommerce.onrender.com"
       - key: EMAIL_HOST_USER

@@ -67,8 +67,8 @@ CONTENT_SECURITY_POLICY = {
     "script-src": "'self' __NONCE__",
     "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src": "'self' data: https://fonts.gstatic.com",
-    "img-src": "'self' data: https://via.placeholder.com https://*.tile.openstreetmap.org",
-    "connect-src": "'self' ws: wss:",
+    "img-src": "'self' data: https://via.placeholder.com https://*.tile.openstreetmap.org https://res.cloudinary.com",
+    "connect-src": "'self' ws: wss: https://res.cloudinary.com",
     "object-src": "'none'",
     "base-uri": "'self'",
     "frame-ancestors": "'none'",
@@ -94,6 +94,42 @@ INSTALLED_APPS = [
     'Utilisateurs',
     'dbfiles',
 ]
+
+# ---------------------------------------------------------------------------
+# Cloudinary
+# ---------------------------------------------------------------------------
+
+def cloudinary_configured() -> bool:
+    """True quand Cloudinary est configuré (via CLOUDINARY_URL ou les 3 variables)."""
+    if env_str('CLOUDINARY_URL'):
+        return True
+    return bool(
+        env_str('CLOUDINARY_CLOUD_NAME')
+        and env_str('CLOUDINARY_API_KEY')
+        and env_str('CLOUDINARY_API_SECRET')
+    )
+
+if cloudinary_configured():
+    INSTALLED_APPS = [
+        *INSTALLED_APPS[:INSTALLED_APPS.index('django.contrib.staticfiles')],
+        'cloudinary',
+        'cloudinary_storage',
+        *INSTALLED_APPS[INSTALLED_APPS.index('django.contrib.staticfiles'):],
+    ]
+    # PREFIX='' => le public_id correspond directement au chemin (articles/...).
+    # Les identifiants ne sont ajoutés que s'ils sont fournis individuellement :
+    # avec uniquement CLOUDINARY_URL, le SDK cloudinary lit l'environnement seul
+    # (définir ici des valeurs vides écraserait les identifiants).
+    CLOUDINARY_STORAGE = {
+        'SECURE': True,
+        'PREFIX': '',
+    }
+    if env_str('CLOUDINARY_CLOUD_NAME') and env_str('CLOUDINARY_API_KEY') and env_str('CLOUDINARY_API_SECRET'):
+        CLOUDINARY_STORAGE.update({
+            'CLOUD_NAME': env_str('CLOUDINARY_CLOUD_NAME'),
+            'API_KEY': env_str('CLOUDINARY_API_KEY'),
+            'API_SECRET': env_str('CLOUDINARY_API_SECRET'),
+        })
 
 ASGI_APPLICATION = 'ecommerce.asgi.application'
 
@@ -247,17 +283,24 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Stockage des fichiers uploadés.
-# - Local : disque (FileSystemStorage), comportement actuel.
-# - Render/Neon : dans PostgreSQL via "dbfiles.storage.DatabaseFileStorage"
-#   (le disque de Render est éphémère, il est effacé à chaque déploiement).
+# - Cloudinary : les images sont hébergées et servies par le CDN Cloudinary
+#   (recommandé sur Render : le disque est éphémère et Neon n'est pas un stockage).
+# - Local : disque (FileSystemStorage), comportement actuel en développement.
+# - Base Neon : "dbfiles.storage.DatabaseFileStorage" (ancien comportement Render,
+#   conservé comme solution de repli et utilisé pour lire les fichiers à migrer).
+def _default_file_storage_backend() -> str:
+    forced = env_str('DEFAULT_FILE_STORAGE')
+    if forced:
+        return forced
+    if cloudinary_configured():
+        return 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    if os.environ.get('RENDER'):
+        return 'dbfiles.storage.DatabaseFileStorage'
+    return 'django.core.files.storage.FileSystemStorage'
+
 STORAGES = {
     'default': {
-        'BACKEND': env_str(
-            'DEFAULT_FILE_STORAGE',
-            # Sur Render : fichiers dans la base (disque éphémère).
-            # En local : disque, comportement actuel.
-            'dbfiles.storage.DatabaseFileStorage' if os.environ.get('RENDER') else 'django.core.files.storage.FileSystemStorage',
-        ),
+        'BACKEND': _default_file_storage_backend(),
     },
     'staticfiles': {
         'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',

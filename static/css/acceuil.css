@@ -208,6 +208,20 @@
     transform: scale(1.05);
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 }
+.adv-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    font-size: 48px;
+    background: linear-gradient(135deg, #eef2f7, #f8fafc);
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+}
+.hero {
+    background-image: linear-gradient(120deg, var(--degrade1, #0f2027), var(--degrade2, #2c5364));
+}
 .advantage-caption {
     margin: 18px 0 0;
     font-size: 15px;

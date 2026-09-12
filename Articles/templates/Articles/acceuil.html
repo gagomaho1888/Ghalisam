@@ -16,7 +16,7 @@
 </div>
 {% endif %}
 
-<div class="hero" style="background-image: url('{{ MEDIA_URL }}articles/chaussre_gucci.jpg');">
+<div class="hero" {% if hero_image %}style="background-image: url('{{ hero_image }}');"{% endif %}>
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <h1>Bienvenue sur Ghalisam Boutique <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -4px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></h1>
@@ -77,13 +77,21 @@
         <div class="advantages-container">
             <div class="advantage-card">
                 <div class="advantage-media">
-                    <img src="{{ MEDIA_URL }}articles/liv.jpg" alt="Livraison Rapide" class="advantage-img">
+                    {% if advantage_images.liv %}
+                        <img src="{{ advantage_images.liv }}" alt="Livraison Rapide" class="advantage-img">
+                    {% else %}
+                        <span class="adv-placeholder">🚚</span>
+                    {% endif %}
                 </div>
                 <p class="advantage-caption"><span class="adv-title">Livraison rapide</span><span class="adv-desc"> : Expédition express à Abidjan, Bouaké et partout en Côte d'Ivoire et même à l'étranger.</span></p>
             </div>
             <div class="advantage-card">
                 <div class="advantage-media">
-                    <img src="{{ MEDIA_URL }}articles/tet1_crop.jpg" alt="Articles Moins Chers" class="advantage-img">
+                    {% if advantage_images.marchandises %}
+                        <img src="{{ advantage_images.marchandises }}" alt="Articles Moins Chers" class="advantage-img">
+                    {% else %}
+                        <span class="adv-placeholder">🏷️</span>
+                    {% endif %}
                 </div>
                 <p class="advantage-caption"><span class="adv-title">Articles moins chers</span><span class="adv-desc"> : Des vêtements de qualité à petits prix, avec des soldes et promotions toute l'année.</span></p>
             </div>
