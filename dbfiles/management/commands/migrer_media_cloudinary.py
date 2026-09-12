@@ -1,4 +1,3 @@
-import mimetypes
 import os
 
 import cloudinary.api
@@ -12,6 +11,11 @@ from django.core.management.base import BaseCommand
 from Articles.models import Article, Review
 from dbfiles.models import StoredFile
 from dbfiles.storage import DatabaseFileStorage
+
+IMAGE_EXTENSIONS = {
+    'jpg', 'jpeg', 'jpe', 'jif', 'jfif', 'png', 'gif', 'webp', 'avif',
+    'bmp', 'tif', 'tiff', 'svg', 'ico', 'heic', 'heif', 'apng',
+}
 
 
 def get_media_tag():
@@ -103,7 +107,7 @@ class Command(BaseCommand):
                 uploaded += 1
                 continue
 
-            resource_type = 'image' if self._looks_like_image(path) else 'raw'
+            resource_type = 'image' if self._looks_like_image(path, data) else 'raw'
             try:
                 cloudinary.uploader.upload(
                     ContentFile(data),
@@ -177,9 +181,20 @@ class Command(BaseCommand):
                 continue
         return None
 
-    def _looks_like_image(self, path):
-        content_type = mimetypes.guess_type(path)[0] or ''
-        return content_type.startswith('image/')
+    def _looks_like_image(self, path, data):
+        ext = os.path.splitext(path)[1].lower().lstrip('.').split('?')[0]
+        if ext in IMAGE_EXTENSIONS:
+            return True
+        head = data[:12]
+        return (
+            head[:3] == b'\xff\xd8\xff'
+            or head[:8] == b'\x89PNG\r\n\x1a\n'
+            or head[:6] in (b'GIF87a', b'GIF89a')
+            or (head[:4] == b'RIFF' and head[8:12] == b'WEBP')
+            or b'ftyp' in head[4:12]
+            or head[:2] in (b'BM', b'II*\x00', b'MM\x00*')
+            or b'<svg' in head.lower()
+        )
 
     def _media_tag(self):
         return get_media_tag()
