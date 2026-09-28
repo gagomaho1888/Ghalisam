@@ -42,11 +42,28 @@
             {% endfor %}
         </div>
         {% endif %}
+        <div class="dispo-bar dispo-{% if livreur.est_disponible %}ok{% else %}off{% endif %}">
+            <div class="dispo-infos">
+                <strong>Statut : {{ livreur.statut_disponibilite }}</strong>
+                {% if livreur.a_commande_en_cours %}
+                <span class="muted">{{ livreur.nb_commandes_en_cours }} commande{{ livreur.nb_commandes_en_cours|pluralize }} à traiter : vous repasserez automatiquement disponible à la clôture{{ livreur.nb_commandes_en_cours|pluralize }}.</span>
+                {% elif livreur.est_disponible %}
+                <span class="muted">L'administration peut vous attribuer de nouvelles commandes.</span>
+                {% else %}
+                <span class="muted">Aucune nouvelle commande ne vous sera attribuée.</span>
+                {% endif %}
+            </div>
+            <form method="post" action="{% url 'livreur_disponibilite' %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" class="btn-sm {% if livreur.est_disponible %}btn-echouee{% else %}btn-livree{% endif %}">
+                    {% if livreur.est_disponible %}Je me rends indisponible{% else %}Je suis disponible{% endif %}
+                </button>
+            </form>
+        </div>
         <div class="filtres">
             <a href="{% url 'livreur_commandes' %}" class="filter-btn {% if not statut_selectionne %}active{% endif %}">Toutes</a>
-            <a href="{% url 'livreur_commandes' %}?statut=en_attente" class="filter-btn {% if statut_selectionne == 'en_attente' %}active{% endif %}">En attente</a>
-            <a href="{% url 'livreur_commandes' %}?statut=en_preparation" class="filter-btn {% if statut_selectionne == 'en_preparation' %}active{% endif %}">En préparation</a>
-            <a href="{% url 'livreur_commandes' %}?statut=en_livraison" class="filter-btn {% if statut_selectionne == 'en_livraison' %}active{% endif %}">En livraison</a>
+            <a href="{% url 'livreur_commandes' %}?statut=en_attente" class="filter-btn {% if statut_selectionne == 'en_attente' %}active{% endif %}">À livrer</a>
             <a href="{% url 'livreur_commandes' %}?statut=livree" class="filter-btn {% if statut_selectionne == 'livree' %}active{% endif %}">Livrée</a>
             <a href="{% url 'livreur_commandes' %}?statut=livraison_echouee" class="filter-btn {% if statut_selectionne == 'livraison_echouee' %}active{% endif %}">Échouée</a>
         </div>
@@ -83,17 +100,22 @@
                     <td>Paiement à la livraison</td>
                     <td><span class="status-badge status-{{ cmd.statut }}">{{ cmd.get_statut_display }}</span></td>
                     <td>
-                        <form method="post" action="{% url 'livreur_update_status' cmd.id %}" style="display:flex;flex-direction:column;gap:4px;">
-                            {% csrf_token %}
-                            <select name="statut" class="statut-select">
-                                <option value="en_attente" {% if cmd.statut == 'en_attente' %}selected{% endif %}>En attente</option>
-                                <option value="en_preparation" {% if cmd.statut == 'en_preparation' %}selected{% endif %}>En préparation</option>
-                                <option value="en_livraison" {% if cmd.statut == 'en_livraison' %}selected{% endif %}>En livraison</option>
-                                <option value="livree" {% if cmd.statut == 'livree' %}selected{% endif %}>Livrée</option>
-                                <option value="livraison_echouee" {% if cmd.statut == 'livraison_echouee' %}selected{% endif %}>Échouée</option>
-                            </select>
-                            <button type="submit" class="btn-sm">Mettre à jour</button>
-                        </form>
+                        {% with transitions=cmd.transitions_livreur %}
+                            {% if transitions %}
+                            <form method="post" action="{% url 'livreur_update_status' cmd.id %}" class="transition-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                {% for valeur, libelle in transitions %}
+                                <button type="submit" name="statut" value="{{ valeur }}"
+                                        class="btn-sm {% if valeur == 'livree' %}btn-livree{% else %}btn-echouee{% endif %}">
+                                    {{ libelle }}
+                                </button>
+                                {% endfor %}
+                            </form>
+                            {% else %}
+                            <span class="muted">Aucune action</span>
+                            {% endif %}
+                        {% endwith %}
                     </td>
                 </tr>
                 {% empty %}
@@ -147,16 +169,10 @@
             '<td>' + new Date().toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) + '</td>',
             '<td>Paiement à la livraison</td>',
             '<td><span class="status-badge status-en_attente">En attente</span></td>',
-            '<td><form method="post" action="' + actionUrl + '" style="display:flex;flex-direction:column;gap:4px;">',
+            '<td><form method="post" action="' + actionUrl + '" class="transition-form">',
             '<input type="hidden" name="csrfmiddlewaretoken" value="' + csrf + '">',
-            '<select name="statut" class="statut-select">',
-            '<option value="en_attente" selected>En attente</option>',
-            '<option value="en_preparation">En pr\u00e9paration</option>',
-            '<option value="en_livraison">En livraison</option>',
-            '<option value="livree">Livr\u00e9e</option>',
-            '<option value="livraison_echouee">\u00c9chou\u00e9e</option>',
-            '</select>',
-            '<button type="submit" class="btn-sm">MAJ</button>',
+            '<button type="submit" name="statut" value="livree" class="btn-sm btn-livree">Livrée</button>',
+            '<button type="submit" name="statut" value="livraison_echouee" class="btn-sm btn-echouee">Échouée</button>',
             '</form></td>'
         ].join('');
         var empty = tbody.querySelector('.empty');
@@ -166,8 +182,9 @@
     document.addEventListener('submit', function(e) {
         var form = e.target;
         if (form.tagName === 'FORM' && form.action.indexOf('/statut/') !== -1) {
-            var select = form.querySelector('select[name="statut"]');
-            if (select && (select.value === 'livree' || select.value === 'livraison_echouee')) {
+            var bouton = e.submitter;
+            var valeur = bouton ? bouton.value : '';
+            if (valeur === 'livree' || valeur === 'livraison_echouee') {
                 navigator.sendBeacon(notifLuesUrl, new URLSearchParams({csrfmiddlewaretoken: getCSRFToken()}));
             }
         }

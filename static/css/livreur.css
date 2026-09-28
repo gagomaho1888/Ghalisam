@@ -125,8 +125,6 @@
 }
 
 .status-en_attente { background: #fef3c7; color: #92400e; }
-.status-en_preparation { background: #dbeafe; color: #1e40af; }
-.status-en_livraison { background: #e0e7ff; color: #3730a3; }
 .status-livree { background: #d1fae5; color: #065f46; }
 .status-livraison_echouee { background: #fee2e2; color: #991b1b; }
 
@@ -224,6 +222,37 @@
     color: #64748b;
     padding: 0 8px;
 }
+
+.dispo-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 24px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+.dispo-bar.dispo-ok { border-color: #a7f3d0; background: #ecfdf5; }
+.dispo-bar.dispo-off { border-color: #fecaca; background: #fef2f2; }
+.dispo-infos { display: flex; flex-direction: column; gap: 3px; }
+.dispo-infos strong { font-size: 0.95rem; color: #0f172a; }
+.dispo-infos .muted { font-size: 0.8rem; }
+
+.transition-form { display: flex; flex-wrap: wrap; gap: 6px; }
+.transition-form .btn-sm { margin: 0; }
+.btn-livree { background: #059669; color: #fff; border-color: #059669; }
+.btn-livree:hover { background: #047857; border-color: #047857; }
+.btn-echouee { background: #dc2626; color: #fff; border-color: #dc2626; }
+.btn-echouee:hover { background: #b91c1c; border-color: #b91c1c; }
+.transition-form .btn-sm:not(.btn-livree):not(.btn-echouee) {
+    background: #1e293b;
+    color: #fff;
+    border-color: #1e293b;
+}
+.transition-form .btn-sm:not(.btn-livree):not(.btn-echouee):hover { background: #334155; }
 
 @media (max-width: 768px) {
     .livreur-wrapper { flex-direction: column; }

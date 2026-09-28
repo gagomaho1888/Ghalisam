@@ -32,7 +32,7 @@ def ajouter_article(request):
         form = ArticleAdminForm(request.POST, request.FILES)
         if form.is_valid():
             article = form.save()
-            _sauvegarder_variantes(request, article)
+            _enregistrer_variantes(request, article)
             messages.success(request, f'Article "{article.nom}" ajouté avec succès.')
             return redirect('gestion_boutique')
     else:
@@ -52,7 +52,7 @@ def modifier_article(request, article_id):
         form = ArticleAdminForm(request.POST, request.FILES, instance=article)
         if form.is_valid():
             article = form.save()
-            _sauvegarder_variantes(request, article)
+            _enregistrer_variantes(request, article)
             messages.success(request, f'Article "{article.nom}" modifié avec succès.')
             return redirect('gestion_boutique')
     else:
@@ -64,6 +64,21 @@ def modifier_article(request, article_id):
         'variantes': variantes,
         'article': article,
     })
+
+
+def _enregistrer_variantes(request, article):
+    """La catégorie « Autre » n'utilise pas les tailles : aucune variation gérée."""
+    if article.categorie == Article.CategorieChoices.AUTRE:
+        nb_variantes = article.variantes.count()
+        if nb_variantes:
+            article.variantes.all().delete()
+            messages.info(
+                request,
+                f'{nb_variantes} variation(s) de taille supprimée(s) : la catégorie « Autre » '
+                f'n\'utilise pas les tailles. Le stock global de l\'article fait foi.'
+            )
+        return
+    _sauvegarder_variantes(request, article)
 
 
 def _sauvegarder_variantes(request, article):

@@ -16,6 +16,7 @@ class Article(models.Model):
         HAUT = 'haut', 'Vêtement Haut'
         BAS = 'bas', 'Vêtement Bas'
         CHAUSSURE = 'chaussure', 'Chaussure'
+        AUTRE = 'autre', 'Autre'
 
     class TailleChoices(models.TextChoices):
         S = 'S', 'S'

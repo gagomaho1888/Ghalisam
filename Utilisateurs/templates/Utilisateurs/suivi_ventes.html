@@ -1,0 +1,221 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Suivi des ventes</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <style>
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin: 16px 0; }
+        .kpi-card { background: #fff; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+        .kpi-label { display: block; font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; color: #64748b; }
+        .kpi-value { display: block; font-size: 1.5rem; font-weight: 700; color: #0f172a; margin: 6px 0 4px; }
+        .kpi-value.principal { color: #3b82f6; }
+        .kpi-sub { display: block; font-size: .78rem; color: #94a3b8; }
+        .evolution { display: inline-block; font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+        .evolution.haut { background: #d1fae5; color: #065f46; }
+        .evolution.bas { background: #fee2e2; color: #991b1b; }
+        .evolution.neutre { background: #e2e8f0; color: #475569; }
+
+        .graphe-card { background: #fff; border-radius: 8px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,.08); margin-top: 8px; }
+        .graphe-entete { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+        .graphe-titre { margin: 0; font-size: 1rem; color: #1e293b; }
+        .legende { display: flex; gap: 16px; font-size: .78rem; color: #64748b; }
+        .legende span { display: flex; align-items: center; gap: 6px; }
+        .legende i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+        .legende .sw-ca { background: #3b82f6; }
+        .legende .sw-cmd { background: #f59e0b; }
+
+        .graphe { display: flex; align-items: flex-end; gap: 4px; height: 240px; padding: 0 4px; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
+        .colonne { flex: 1 0 22px; min-width: 22px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 2px; cursor: default; }
+        .colonne:hover { background: #f1f5f9; border-radius: 4px 4px 0 0; }
+        .barre-ca { width: 60%; background: #3b82f6; border-radius: 3px 3px 0 0; min-height: 2px; }
+        .barre-cmd { width: 60%; background: #f59e0b; border-radius: 0 0 3px 3px; min-height: 2px; }
+        .axe { display: flex; gap: 4px; padding-top: 6px; overflow-x: hidden; }
+        .axe span { flex: 1 0 22px; min-width: 22px; text-align: center; font-size: .62rem; color: #94a3b8; white-space: nowrap; }
+        .vide-graphe { text-align: center; color: #94a3b8; font-size: .88rem; padding: 60px 0; }
+    </style>
+</head>
+<body>
+{% include 'Articles/nav.html' %}
+<div class="admin-wrapper">
+    <aside class="admin-sidebar">
+        <h3>Administration</h3>
+        <a href="{% url 'admin_dashboard' %}">Tableau de bord</a>
+        <a href="{% url 'toutes_commandes' %}">Commandes</a>
+        <a href="{% url 'suivi_ventes' %}" class="active">Suivi des ventes</a>
+        <a href="{% url 'gestion_livreurs' %}">Livreurs</a>
+        <a href="{% url 'gestion_boutique' %}">Gestion boutique</a>
+        <a href="/admin/">Django Admin</a>
+        <a href="{% url 'acceuil' %}">Retour au site</a>
+    </aside>
+    <main class="admin-main">
+        <div class="admin-header">
+            <div>
+                <h1>Suivi des ventes</h1>
+                <p class="muted" style="margin:0;">{{ periode.label }} — du {{ debut|date:"d/m/Y" }} au {% now "d/m/Y" %}</p>
+            </div>
+            <a href="{% url 'toutes_commandes' %}" class="btn-sm">Voir les commandes</a>
+        </div>
+
+        {% if messages %}
+        <div class="admin-messages">
+            {% for msg in messages %}
+            <div class="admin-alert {{ msg.tags }}">{{ msg }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="filtres">
+            {% for code, item in periodes.items %}
+                <a href="?periode={{ code }}{% if granularite %}&amp;granularite={{ granularite }}{% endif %}"
+                   class="filter-btn {% if periode_code == code %}active{% endif %}">{{ item.label }}</a>
+            {% endfor %}
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <span class="kpi-label">Chiffre d'affaires</span>
+                <span class="kpi-value principal">{{ stats.ca|floatformat:0 }} FCFA</span>
+                {% if evolutions.ca != None %}
+                    {% if evolutions.ca > 0 %}
+                        <span class="evolution haut">+{{ evolutions.ca|floatformat:1 }} %</span>
+                    {% elif evolutions.ca < 0 %}
+                        <span class="evolution bas">{{ evolutions.ca|floatformat:1 }} %</span>
+                    {% else %}
+                        <span class="evolution neutre">0 %</span>
+                    {% endif %}
+                {% else %}
+                    <span class="evolution neutre">n/a</span>
+                {% endif %}
+                <span class="kpi-sub">Période précédente : {{ stats_precedentes.ca|floatformat:0 }} FCFA</span>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-label">Commandes</span>
+                <span class="kpi-value">{{ stats.nb_commandes }}</span>
+                {% if evolutions.nb_commandes != None %}
+                    {% if evolutions.nb_commandes > 0 %}
+                        <span class="evolution haut">+{{ evolutions.nb_commandes|floatformat:1 }} %</span>
+                    {% elif evolutions.nb_commandes < 0 %}
+                        <span class="evolution bas">{{ evolutions.nb_commandes|floatformat:1 }} %</span>
+                    {% else %}
+                        <span class="evolution neutre">0 %</span>
+                    {% endif %}
+                {% else %}
+                    <span class="evolution neutre">n/a</span>
+                {% endif %}
+                <span class="kpi-sub">{{ stats.nb_livrees }} livrée(s) · {{ stats.nb_echouees }} échouée(s)</span>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-label">Panier moyen</span>
+                <span class="kpi-value">{{ stats.panier_moyen|floatformat:0 }} FCFA</span>
+                {% if evolutions.panier_moyen != None %}
+                    {% if evolutions.panier_moyen > 0 %}
+                        <span class="evolution haut">+{{ evolutions.panier_moyen|floatformat:1 }} %</span>
+                    {% elif evolutions.panier_moyen < 0 %}
+                        <span class="evolution bas">{{ evolutions.panier_moyen|floatformat:1 }} %</span>
+                    {% else %}
+                        <span class="evolution neutre">0 %</span>
+                    {% endif %}
+                {% else %}
+                    <span class="evolution neutre">n/a</span>
+                {% endif %}
+                <span class="kpi-sub">Sur {{ stats.nb_ventes }} commande(s) encaissée(s)</span>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-label">CA articles</span>
+                <span class="kpi-value">{{ stats.ca_articles|floatformat:0 }} FCFA</span>
+                <span class="kpi-sub">Hors frais de livraison</span>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-label">Frais de livraison</span>
+                <span class="kpi-value">{{ stats.frais_livraison|floatformat:0 }} FCFA</span>
+                <span class="kpi-sub">Collectés sur la période</span>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-label">Clients</span>
+                <span class="kpi-value">{{ stats.nb_clients }}</span>
+                <span class="kpi-sub">Clients distincts ayant commandé</span>
+            </div>
+        </div>
+
+        <div class="graphe-card">
+            <div class="graphe-entete">
+                <h2 class="graphe-titre">Évolution par {{ granularite }}</h2>
+                <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                    <div class="legende">
+                        <span><i class="sw-ca"></i>CA (FCFA)</span>
+                        <span><i class="sw-cmd"></i>Commandes</span>
+                    </div>
+                    <div class="filtres" style="margin:0;">
+                        <a href="?periode={{ periode_code }}&amp;granularite=jour" class="filter-btn {% if granularite == 'jour' %}active{% endif %}">Par jour</a>
+                        <a href="?periode={{ periode_code }}&amp;granularite=mois" class="filter-btn {% if granularite == 'mois' %}active{% endif %}">Par mois</a>
+                    </div>
+                </div>
+            </div>
+
+            {% if series %}
+            <div class="graphe">
+                {% for point in series %}
+                <div class="colonne" title="{{ point.label_long }} — {{ point.ca|floatformat:0 }} FCFA · {{ point.nb_commandes }} commande(s)">
+                    <div class="barre-ca" style="height: {{ point.hauteur_ca|floatformat:2 }}%;"></div>
+                    <div class="barre-cmd" style="height: {{ point.hauteur_cmd|floatformat:2 }}%;"></div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="axe">
+                {% for point in series %}
+                <span>{{ point.label }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="vide-graphe">Aucune vente sur cette période.</p>
+            {% endif %}
+        </div>
+
+        <h2>Détail par {{ granularite }}</h2>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>{{ granularite|capfirst }}</th>
+                    <th>Chiffre d'affaires</th>
+                    <th>Commandes</th>
+                    <th>Panier moyen</th>
+                    <th>Part du CA</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for point in series %}
+                <tr>
+                    <td>{{ point.label_long }}</td>
+                    <td>{{ point.ca|floatformat:0 }} FCFA</td>
+                    <td>{{ point.nb_commandes }}</td>
+                    <td>{{ point.panier_moyen|floatformat:0 }} FCFA</td>
+                    <td>{{ point.part_ca|floatformat:1 }} %</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="empty">Aucune vente sur cette période.</td></tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="background:#f1f5f9;font-weight:700;">
+                    <td>Total</td>
+                    <td>{{ stats.ca|floatformat:0 }} FCFA</td>
+                    <td>{{ stats.nb_commandes }}</td>
+                    <td>{{ stats.panier_moyen|floatformat:0 }} FCFA</td>
+                    <td>100 %</td>
+                </tr>
+            </tfoot>
+        </table>
+    </main>
+</div>
+</body>
+</html>

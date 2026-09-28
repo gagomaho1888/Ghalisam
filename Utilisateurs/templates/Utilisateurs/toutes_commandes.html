@@ -16,6 +16,7 @@
         <h3>Administration</h3>
         <a href="{% url 'admin_dashboard' %}">Tableau de bord</a>
         <a href="{% url 'toutes_commandes' %}" class="active">Commandes</a>
+        <a href="{% url 'suivi_ventes' %}">Suivi des ventes</a>
         <a href="{% url 'gestion_livreurs' %}">Livreurs</a>
         <a href="{% url 'gestion_boutique' %}">Gestion boutique</a>
         <a href="/admin/">Django Admin</a>
@@ -32,9 +33,7 @@
         {% endif %}
         <div class="filtres">
             <a href="{% url 'toutes_commandes' %}" class="filter-btn {% if not statut_selectionne %}active{% endif %}">Toutes</a>
-            <a href="{% url 'toutes_commandes' %}?statut=en_attente" class="filter-btn {% if statut_selectionne == 'en_attente' %}active{% endif %}">En attente</a>
-            <a href="{% url 'toutes_commandes' %}?statut=en_preparation" class="filter-btn {% if statut_selectionne == 'en_preparation' %}active{% endif %}">En préparation</a>
-            <a href="{% url 'toutes_commandes' %}?statut=en_livraison" class="filter-btn {% if statut_selectionne == 'en_livraison' %}active{% endif %}">En livraison</a>
+            <a href="{% url 'toutes_commandes' %}?statut=en_attente" class="filter-btn {% if statut_selectionne == 'en_attente' %}active{% endif %}">À livrer</a>
             <a href="{% url 'toutes_commandes' %}?statut=livree" class="filter-btn {% if statut_selectionne == 'livree' %}active{% endif %}">Livrée</a>
             <a href="{% url 'toutes_commandes' %}?statut=livraison_echouee" class="filter-btn {% if statut_selectionne == 'livraison_echouee' %}active{% endif %}">Échouée</a>
         </div>
@@ -63,7 +62,11 @@
                     <td><span class="status-badge status-{{ cmd.statut }}">{{ cmd.get_statut_display }}</span></td>
                     <td>{% if cmd.livreur %}{{ cmd.livreur.username }}{% else %}<span class="muted">—</span>{% endif %}</td>
                     <td>{{ cmd.created_at|date:"d/m/Y H:i" }}</td>
-                    <td><a href="{% url 'attribuer_commande' cmd.id %}" class="btn-sm">Attribuer</a></td>
+                    <td>
+                        <a href="{% url 'attribuer_commande' cmd.id %}" class="btn-sm">
+                            {% if cmd.statut == 'livraison_echouee' %}Réattribuer{% else %}Attribuer{% endif %}
+                        </a>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr><td colspan="9" class="empty">Aucune commande.</td></tr>

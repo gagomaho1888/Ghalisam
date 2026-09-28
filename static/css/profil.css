@@ -58,7 +58,5 @@
     white-space: nowrap;
 }
 .statut-en_attente          { background: #fef3c7; color: #92400e; }
-.statut-en_preparation      { background: #dbeafe; color: #1e40af; }
-.statut-en_livraison        { background: #e0e7ff; color: #3730a3; }
 .statut-livree              { background: #d1fae5; color: #065f46; }
 .statut-livraison_echouee   { background: #fee2e2; color: #991b1b; }

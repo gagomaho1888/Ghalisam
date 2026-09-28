@@ -39,6 +39,7 @@
         <h3>Administration</h3>
         <a href="{% url 'admin_dashboard' %}">Tableau de bord</a>
         <a href="{% url 'toutes_commandes' %}">Commandes</a>
+        <a href="{% url 'suivi_ventes' %}">Suivi des ventes</a>
         <a href="{% url 'gestion_livreurs' %}">Livreurs</a>
         <a href="{% url 'gestion_boutique' %}" class="active">Gestion boutique</a>
         <a href="/admin/">Django Admin</a>
@@ -100,7 +101,7 @@
                     <label for="id_stock">Stock *</label>
                     <input type="number" name="stock" id="id_stock" min="0" value="{{ form.stock.value|default:'0' }}">
                 </div>
-                <div class="form-row">
+                <div class="form-row champ-vestimentaire" id="row_taille">
                     <label for="id_taille">Taille par défaut</label>
                     <select name="taille" id="id_taille">
                         <option value="" {% if not form.taille.value %}selected{% endif %}>Aucune</option>
@@ -117,7 +118,7 @@
                     <label for="id_marque">Marque</label>
                     <input type="text" name="marque" id="id_marque" value="{{ form.marque.value|default:'' }}">
                 </div>
-                <div class="form-row">
+                <div class="form-row champ-vestimentaire" id="row_poids">
                     <label for="id_poids">Poids (kg)</label>
                     <input type="number" name="poids" id="id_poids" step="0.01" value="{{ form.poids.value|default:'' }}">
                 </div>
@@ -140,7 +141,7 @@
                 {% endif %}
             </div>
 
-            <h3 class="section-title">Variations de taille (stock par taille)</h3>
+            <h3 class="section-title" id="variantesTitre">Variations de taille (stock par taille)</h3>
             <div id="variantContainer">
                 {% for vf in variantes %}
                 <div class="variant-card">
@@ -170,6 +171,11 @@
             </div>
             <button type="button" class="add-variant" id="addVariant">+ Ajouter une variante</button>
 
+            <div class="admin-alert info" id="aucuneVariante" style="display:none;">
+                Catégorie « Autre » : les tailles, le poids et les variations ne sont pas utilisés.
+                Seul le stock saisi ci-dessus compte pour cet article.
+            </div>
+
             <div>
                 <button type="submit" class="btn-primary btn">Enregistrer</button>
                 <a href="{% url 'gestion_boutique' %}" class="btn-cancel">Annuler</a>
@@ -182,6 +188,31 @@
 (function(){
     var container = document.getElementById('variantContainer');
     var addBtn = document.getElementById('addVariant');
+    var categorieSelect = document.getElementById('id_categorie');
+    var variantesTitre = document.getElementById('variantesTitre');
+    var infoAutre = document.getElementById('aucuneVariante');
+    var champsVestimentaires = [
+        document.getElementById('row_taille'),
+        document.getElementById('row_poids')
+    ];
+
+    function estCategorieAutre(){
+        return categorieSelect.value === 'autre';
+    }
+
+    function appliquerCategorie(){
+        var autre = estCategorieAutre();
+        champsVestimentaires.forEach(function(row){
+            if(row) row.style.display = autre ? 'none' : '';
+        });
+        if(variantesTitre) variantesTitre.style.display = autre ? 'none' : '';
+        if(container) container.style.display = autre ? 'none' : '';
+        if(addBtn) addBtn.style.display = autre ? 'none' : '';
+        if(infoAutre) infoAutre.style.display = autre ? '' : 'none';
+    }
+
+    categorieSelect.addEventListener('change', appliquerCategorie);
+    appliquerCategorie();
 
     function tailleOptions(selected){
         var opts = '<option value="">— Choisir —</option>';

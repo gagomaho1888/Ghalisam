@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import UploadedFile
 from django.utils.text import slugify
 from PIL import Image as PillowImage
 from .models import Review, Article, ArticleVariant
@@ -51,6 +52,11 @@ class ArticleAdminForm(forms.ModelForm):
             'disponible': 'Disponible à la vente',
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Le slug est auto-généré depuis le nom dans clean_slug().
+        self.fields['slug'].required = False
+
     def clean_slug(self):
         slug = self.cleaned_data.get('slug')
         if not slug:
@@ -64,7 +70,8 @@ class ArticleAdminForm(forms.ModelForm):
 
     def clean_image(self):
         image = self.cleaned_data.get('image')
-        if not image:
+        # L'image déjà enregistrée n'est validée que si un nouveau fichier est envoyé.
+        if not image or not isinstance(image, UploadedFile):
             return image
         return _valider_contenu_image(image, 'image')
 
@@ -109,6 +116,6 @@ class ReviewForm(forms.ModelForm):
 
     def clean_image(self):
         image = self.cleaned_data.get('image')
-        if not image:
+        if not image or not isinstance(image, UploadedFile):
             return image
         return _valider_contenu_image(image, 'image')

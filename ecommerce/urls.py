@@ -35,6 +35,7 @@ urlpatterns = [
     path('admin-dashboard/livreurs/<int:livreur_id>/supprimer/', admin_views.delete_livreur, name='delete_livreur'),
     path('admin-dashboard/commandes/', admin_views.toutes_commandes, name='toutes_commandes'),
     path('admin-dashboard/commandes/<int:commande_id>/attribuer/', admin_views.attribuer_commande, name='attribuer_commande'),
+    path('admin-dashboard/ventes/', admin_views.suivi_ventes, name='suivi_ventes'),
 
     path('admin-dashboard/boutique/', boutique_views.gestion_boutique, name='gestion_boutique'),
     path('admin-dashboard/boutique/ajouter/', boutique_views.ajouter_article, name='ajouter_article'),
@@ -45,6 +46,7 @@ urlpatterns = [
     path('livreur/', livreur_views.livreur_dashboard, name='livreur_dashboard'),
     path('livreur/commandes/', livreur_views.livreur_commandes, name='livreur_commandes'),
     path('livreur/commandes/<int:commande_id>/statut/', livreur_views.livreur_update_status, name='livreur_update_status'),
+    path('livreur/disponibilite/', livreur_views.livreur_disponibilite, name='livreur_disponibilite'),
 
     path('api/notifications/', api_views.api_notifications, name='api_notifications'),
     path('api/notifications/lues/', api_views.api_notifications_lues, name='api_notifications_lues'),

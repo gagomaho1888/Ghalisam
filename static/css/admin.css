@@ -189,8 +189,6 @@
 }
 
 .status-en_attente { background: #fef3c7; color: #92400e; }
-.status-en_preparation { background: #dbeafe; color: #1e40af; }
-.status-en_livraison { background: #e0e7ff; color: #3730a3; }
 .status-livree { background: #d1fae5; color: #065f46; }
 .status-livraison_echouee { background: #fee2e2; color: #991b1b; }
 

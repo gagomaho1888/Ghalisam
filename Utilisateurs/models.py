@@ -6,10 +6,41 @@ class Livreur(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='livreur_profile')
     telephone = models.CharField(max_length=20, blank=True)
     est_actif = models.BooleanField(default=True)
+    est_disponible = models.BooleanField(default=True)
     date_creation = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Livreur {self.user.username}"
+
+    @property
+    def a_commande_en_cours(self):
+        return self.user.commandes_livreur.filter(
+            statut=Commande.StatutChoices.EN_ATTENTE
+        ).exists()
+
+    @property
+    def nb_commandes_en_cours(self):
+        return self.user.commandes_livreur.filter(
+            statut=Commande.StatutChoices.EN_ATTENTE
+        ).count()
+
+    def marquer_indisponible_si_occupe(self):
+        if self.est_disponible and self.a_commande_en_cours:
+            self.est_disponible = False
+            self.save(update_fields=['est_disponible'])
+            return True
+        return False
+
+    def marquer_disponible_si_libre(self):
+        if not self.est_disponible and not self.a_commande_en_cours:
+            self.est_disponible = True
+            self.save(update_fields=['est_disponible'])
+            return True
+        return False
+
+    @property
+    def statut_disponibilite(self):
+        return 'Disponible' if self.est_disponible else 'Indisponible'
 
 
 class Notification(models.Model):
@@ -48,10 +79,14 @@ class Utilisateur(models.Model):
 class Commande(models.Model):
     class StatutChoices(models.TextChoices):
         EN_ATTENTE = 'en_attente', 'En attente'
-        EN_PREPARATION = 'en_preparation', 'En préparation'
-        EN_LIVRAISON = 'en_livraison', 'En livraison'
         LIVREE = 'livree', 'Livrée'
         LIVRAISON_ECHOUEE = 'livraison_echouee', 'Livraison échouée'
+
+    TRANSITIONS_LIVREUR = {
+        StatutChoices.EN_ATTENTE: [StatutChoices.LIVREE, StatutChoices.LIVRAISON_ECHOUEE],
+        StatutChoices.LIVREE: [],
+        StatutChoices.LIVRAISON_ECHOUEE: [],
+    }
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='commandes')
     ticket = models.CharField(max_length=50, unique=True)
@@ -77,3 +112,15 @@ class Commande(models.Model):
 
     def __str__(self):
         return f"Commande {self.ticket} - {self.user.username}"
+
+    @property
+    def transitions_livreur(self):
+        libelles = dict(self.StatutChoices.choices)
+        return [
+            (valeur, libelles[valeur])
+            for valeur in self.TRANSITIONS_LIVREUR.get(self.statut, [])
+        ]
+
+    @property
+    def est_reattribuable(self):
+        return self.statut in (self.StatutChoices.EN_ATTENTE, self.StatutChoices.LIVRAISON_ECHOUEE)
