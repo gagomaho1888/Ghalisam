@@ -1,0 +1,229 @@
+@startuml
+' Diagramme de classes - Ghalisam Boutique
+' Source : Articles/models.py, Utilisateurs/models.py, dbfiles/models.py, Articles/cart.py
+' Framework : Django 5.2 + Channels (ASGI), PostgreSQL
+
+title Diagramme de classes - Ghalisam Boutique (Django)
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+hide empty members
+
+' =========================================================
+' App Utilisateurs
+' =========================================================
+
+class User {
+  <<django.contrib.auth>>
+  --
+  +id : int
+  +username : str
+  +email : str
+  +first_name : str
+  +is_staff : bool
+  +is_superuser : bool
+  +is_active : bool
+  --
+  +set_password(pwd)
+  --
+  +is_authenticated : bool
+}
+
+class Utilisateur {
+  <<Model>>
+  --
+  +nom : OneToOneField<User>
+  +prenom : CharField(100)
+  +adresse : CharField(255)
+  +telephone : CharField(20)
+  +ville : CharField(100)
+  +pays : CharField(100)
+  +code_postal : CharField(20)
+  +code_validation : CharField(64)
+  +email_verified : bool
+  +code_validation_expires : DateTime
+}
+
+class Livreur {
+  <<Model>>
+  --
+  +user : OneToOneField<User>
+  +telephone : CharField(20)
+  +est_actif : bool
+  +date_creation : DateTime
+}
+
+class Commande {
+  <<Model>>
+  --
+  +user : ForeignKey<User>
+  +ticket : CharField(50) <<unique>>
+  +statut : CharField(20) <<db_index>>
+  +livreur : ForeignKey<User> <<nullable>>
+  +fullname : CharField(200)
+  +adresse : CharField(255)
+  +ville : CharField(100)
+  +pays : CharField(100)
+  +code_postal : CharField(20)
+  +telephone : CharField(20)
+  +total_price : Decimal(10,2)
+  +shipping_cost : Decimal(10,2)
+  +items : TextField
+  +created_at : DateTime
+  --
+  +get_statut_display() : str
+}
+
+class Notification {
+  <<Model>>
+  --
+  +livreur : ForeignKey<User>
+  +commande : ForeignKey<Commande> <<nullable>>
+  +message : CharField(255)
+  +lue : bool
+  +date_creation : DateTime
+}
+
+' =========================================================
+' App Articles
+' =========================================================
+
+class Article {
+  <<Model>>
+  --
+  +nom : CharField(200)
+  +slug : SlugField <<unique>>
+  +description : TextField
+  +prix : Decimal(10,2)
+  +stock : PositiveIntegerField
+  +image : ImageField <<nullable>>
+  +disponible : bool
+  +marque : CharField(100)
+  +categorie : CharField(20)
+  +taille : CharField(4)
+  +poids : Decimal(6,2) <<nullable>>
+  +couleur : CharField(50)
+  +date_creation : DateTime
+  +date_modification : DateTime
+  --
+  +total_stock : int
+  +stock_status : str
+  +is_out_of_stock : bool
+  +get_categorie_display() : str
+  +__str__() : str
+}
+
+class ArticleVariant {
+  <<Model>>
+  --
+  +article : ForeignKey<Article>
+  +taille : CharField(4)
+  +couleur : CharField(50)
+  +stock : PositiveIntegerField
+  --
+  +stock_status : str
+}
+
+class Review {
+  <<Model>>
+  --
+  +user : ForeignKey<User>
+  +article : ForeignKey<Article>
+  +rating : PositiveSmallIntegerField (1..5)
+  +comment : TextField
+  +image : ImageField <<nullable>>
+  +seller_response : TextField
+  +achat_verifie : bool
+  +created_at : DateTime
+  +updated_at : DateTime
+}
+
+class NewsletterSubscriber {
+  <<Model>>
+  --
+  +email : EmailField <<unique>>
+  +date_inscription : DateTime
+  +actif : bool
+}
+
+class Cart {
+  <<session Django>>
+  --
+  +SESSION_KEY : str
+  +cart : dict
+  --
+  +add(article, quantity, size)
+  +remove(key)
+  +update_quantity(key, quantity)
+  +clear()
+  +get_total_price() : Decimal
+  +__iter__()
+}
+
+' =========================================================
+' App dbfiles
+' =========================================================
+
+class StoredFile {
+  <<Model>>
+  --
+  +path : TextField <<unique>>
+  +content : BinaryField
+  +size : PositiveBigIntegerField
+  +created_at : DateTime
+  +updated_at : DateTime
+}
+
+' =========================================================
+' Énumérations
+' =========================================================
+
+enum CategorieChoices {
+  haut = "Vêtement Haut"
+  bas = "Vêtement Bas"
+  chaussure = "Chaussure"
+  autre = "Autre"
+}
+
+enum TailleChoices {
+  S
+  M
+  L
+  XL
+  XXL
+  SIZE_35 .. SIZE_46
+}
+
+enum StatutChoices {
+  en_attente = "En attente"
+  en_preparation = "En préparation"
+  en_livraison = "En livraison"
+  livree = "Livrée"
+  livraison_echouee = "Livraison échouée"
+}
+
+' =========================================================
+' Associations
+' =========================================================
+
+User "1" *-- "0..1" Utilisateur : nom
+User "1" *-- "0..1" Livreur : user
+User "1" -- "0..*" Commande : passe (client)
+User "0..1" -- "0..*" Commande : livreur
+User "1" -- "0..*" Notification : destinataire
+User "1" -- "0..*" Review : auteur
+
+Article "1" *-- "0..*" ArticleVariant : variantes
+Article "1" -- "0..*" Review : avis
+Commande "0..1" -- "0..*" Notification : concerne
+
+Article --> CategorieChoices : categorie
+Article --> TailleChoices : taille
+ArticleVariant --> TailleChoices : taille
+Commande --> StatutChoices : statut
+
+Cart ..> Article : article_id / size
+Cart ..> ArticleVariant : stock vérifié
+
+@enduml

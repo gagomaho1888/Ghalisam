@@ -1,0 +1,98 @@
+@startuml
+' Ghalisam Boutique - Passation de commande (checkout)
+' Source : Articles/views.py::commande(), Articles/cart.py, Utilisateurs/models.py::Commande
+
+title Passation de commande (Client connecté)
+
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #334155
+  LifeBorderColor #334155
+  ParticipantBorderColor #334155
+  ParticipantBackgroundColor #E2E8F0
+  ActorBorderColor #1E293B
+  ActorBackgroundColor #CBD5E1
+  DatabaseBorderColor #334155
+  DatabaseBackgroundColor #F1F5F9
+  GroupBorderColor #94A3B8
+}
+
+actor "Client" as C
+boundary "Navigateur" as N
+control "Vue commande\nArticles/views.py" as V
+control "Formulaire\nArticleAdminForm" as F
+entity "Cart\n(session)" as CART
+control "Article /\nArticleVariant" as ART
+database "PostgreSQL" as DB
+control "Channel Layer" as CH
+boundary "AdminNotificationConsumer" as WS
+control "SMTP Gmail" as MAIL
+actor "Administrateur" as AD
+
+== Authentification (rappel) ==
+C -> N : Valider la commande
+N -> V : POST /panier/ (action=checkout)
+V -> V : is_authenticated ?
+V --> N : Rediriger /connexion/ si invité
+V -> DB : Vérifier session + utilisateur
+
+== Récupération du panier ==
+V -> CART : new Cart(request)
+CART --> V : Lignes du panier (article_id, prix, qté, taille)
+V -> F : Panier non vide ?
+F --> V : OK, sinon message "panier vide"
+
+== Adresse de livraison ==
+C -> N : Remplir ville, pays, code postal, téléphone
+C -> N : Choisir un point sur la carte (lat, lon)
+N -> V : POST avec lat / lon
+V -> V : Décoder lat / lon (Decimal)
+alt lat = 0 et lon = 0
+  V -> V : frais = 1500 FCFA (valeur par défaut)
+else Coordonnées exploitables
+  V -> V : Formule de Haversine (distance boutique / client)
+  V -> V : _calculer_frais_livraison(distance)
+  note right of V
+    <10 km : 1000
+    <50 km : 1500
+    <200 km : 2500
+    <500 km : 4000
+    sinon : 5000 FCFA
+    Total articles > 50000 : 0
+  end note
+end
+
+== Contrôle du stock et calcul du total ==
+V -> ART : get_object_or_404(Article, disponible=True)
+V -> ART : variantes.filter(taille=size)
+ART -> DB : SELECT article / variante
+DB --> ART : stock disponible
+loop Pour chaque ligne du panier
+  alt Quantité > stock en base
+    V --> N : Message "stock insuffisant"
+  else Stock suffisant
+    V -> V : item_descriptions += "nom:id xQuantité (taille)"
+    V -> V : total_recalcule += prix x quantité
+  end
+end
+
+== Enregistrement de la commande ==
+V -> DB : BEGIN TRANSACTION
+V -> DB : INSERT INTO commande\n(ticket, user, total_price, shipping_cost, items, statut=en_attente)
+DB --> V : COMMIT
+V -> V : ticket = "TKT-" + uuid4().hex[:8]
+V -> CART : clear()
+V -> V : session['checkout_ticket'] = ticket
+V --> N : Rediriger vers l'accueil
+
+== Notifications ==
+V -> CH : group_send('admin_notifications',\nnouvelle_commande_admin)
+CH -> WS : Diffuser l'événement
+WS --> AD : WebSocket /ws/admin/notifications/\n(ticket, client, montant, articles)
+opt ADMIN_EMAIL défini
+  V -> MAIL : send_mail("Nouvelle commande TKT-XXXX")
+  MAIL --> AD : Email à l'administrateur
+end
+V --> N : Notification navigateur (son + cloche)
+
+@enduml

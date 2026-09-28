@@ -1,0 +1,103 @@
+@startuml
+' Ghalisam Boutique - Parcours d'un avis client et réponse du vendeur
+' Source : Articles/views.py::add_review(), user_has_purchased(), edit_review(), delete_review(),
+'           Articles/admin.py::ReviewAdmin, Utilisateurs/views.py::profil()
+
+title Avis client : dépôt, modification, suppression et réponse du vendeur
+
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #334155
+  LifeBorderColor #334155
+  ParticipantBorderColor #334155
+  ParticipantBackgroundColor #E2E8F0
+  ActorBorderColor #1E293B
+  ActorBackgroundColor #CBD5E1
+  DatabaseBorderColor #334155
+  DatabaseBackgroundColor #F1F5F9
+  GroupBorderColor #94A3B8
+}
+
+actor "Client" as C
+boundary "Navigateur" as N
+control "Vue profil /\nproduit_detail" as V
+control "user_has_purchased" as U
+control "ReviewForm\n+ validation image" as F
+entity "Article" as A
+entity "Review" as R
+control "Validation du fichier\n_valider_contenu_image" as IMG
+database "PostgreSQL" as DB
+entity "Stockage média\n(fichier / Cloudinary)" as MEDIA
+actor "Administrateur" as AD
+control "Django Admin\nReviewAdmin" as ADM
+
+== Verification du droit de laisser un avis ==
+C -> N : Ouvrir son profil
+N -> V : GET /profil/
+V -> DB : SELECT commandes du client
+V -> DB : SELECT articles des commandes livrées
+V --> N : Liste des articles livrés\n(flag already_reviewed)
+
+C -> N : Choisir un article et saisir son avis
+N -> V : POST /produit/<id>/avis/ajouter/ (multipart)
+V -> V : @login_required
+V -> U : user_has_purchased(client, article)
+U -> DB : SELECT commandes du client\nWHERE statut = livree
+U -> U : Vérifier l'ID ou le nom\ndans commande.items
+U --> V : True / False
+
+alt Article non livré au client
+  V --> N : Message "Avis réservé aux commandes livrées"
+else Article bien livré au client
+  V -> DB : Un avis existe-t-il déjà pour (user, article) ?
+  alt Avis déjà déposé
+    V --> N : Message "Vous avez déjà laissé un avis"
+  else Aucun avis déposé
+    V -> F : ReviewForm(comment, rating, image)
+    F -> IMG : Fichier reçu ?
+    IMG -> MEDIA : Vérifier extension + taille + magic bytes
+    alt Fichier invalide
+      IMG --> F : Erreur de validation
+    end
+    F --> V : Formulaire valide
+    V -> R : Review(user, article, achat_verifie=True)
+    R -> DB : INSERT review
+    DB --> V : Avis publié
+    V --> N : Message "Avis publié"
+  end
+end
+
+== Modification et suppression par le client ==
+C -> N : Modifier son avis
+N -> V : POST /avis/<id>/modifier/
+V -> V : @login_required
+V -> DB : get_object_or_404(Review, id, user=request.user)
+V -> U : user_has_purchased(...)
+U --> V : True
+V -> DB : UPDATE review
+
+C -> N : Supprimer son avis
+N -> V : POST /avis/<id>/supprimer/
+V -> DB : get_object_or_404(Review, id, user=request.user)
+V -> MEDIA : Supprimer le fichier image
+V -> DB : DELETE review
+V --> N : Message "Avis supprimé"
+
+== Réponse du vendeur ==
+AD -> N : Ouvrir /admin/Articles/review/
+N -> ADM : Liste des avis
+ADM -> DB : SELECT reviews
+ADM --> N : Filtrage par note,\nachat vérifié, article, utilisateur
+AD -> N : Renseigner seller_response
+N -> ADM : POST
+ADM -> DB : UPDATE review.seller_response
+ADM --> N : Réponse enregistrée
+
+== Affichage public ==
+C -> N : Consulter un produit
+N -> V : GET /produit/<id>/
+V -> DB : SELECT avis + moyenne des notes
+V --> N : Note moyenne, distribution 5 à 1,\navatar, photos, réponse du vendeur
+V -> A : get_review_stats(article)
+
+@enduml

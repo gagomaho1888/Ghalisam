@@ -1,0 +1,95 @@
+@startuml
+' Ghalisam Boutique - Suivi de livraison et mise à jour du stock
+' Source : Utilisateurs/livreur_views.py::livreur_update_status(), _decrementer_stock(), _envoyer_email_livraison()
+
+title Mise à jour du statut d'une commande (Livreur) et décrémentation du stock
+
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #334155
+  LifeBorderColor #334155
+  ParticipantBorderColor #334155
+  ParticipantBackgroundColor #E2E8F0
+  ActorBorderColor #1E293B
+  ActorBackgroundColor #CBD5E1
+  DatabaseBorderColor #334155
+  DatabaseBackgroundColor #F1F5F9
+  GroupBorderColor #94A3B8
+}
+
+actor "Livreur" as L
+boundary "Navigateur" as N
+control "Vue livreur\nlivreur_views.py" as V
+control "Décorateur\nlivreur_required" as D
+control "Table des transitions\nSTATUTS_TRANSITIONS_LIVREUR" as T
+control "_decrementer_stock" as S
+control "Email de livraison\nemail_livraison.html" as E
+control "SMTP Gmail" as MAIL
+entity "Article /\nArticleVariant" as ART
+database "PostgreSQL" as DB
+
+== Contrôle d'accès ==
+L -> N : /livreur/commandes/
+N -> V : GET
+V -> D : livreur_required
+D -> DB : hasattr(user, 'livreur_profile') et est_actif ?
+alt Non livreur ou compte désactivé
+  D --> N : Message d'accès refusé
+end
+D -> DB : SELECT commandes WHERE livreur = user
+DB --> D : Commandes assignées
+D --> N : Liste filtrable par statut
+
+== Changement de statut ==
+L -> N : Cliquer sur le nouveau statut
+N -> V : POST /livreur/commandes/<id>/statut/
+V -> D : livreur_required
+D -> DB : get_object_or_404(Commande, livreur=request.user)
+DB --> D : Commande
+
+D -> T : T[commande.statut]
+T --> V : Transitions autorisées
+
+alt Transition valide
+  V -> DB : UPDATE commande SET statut
+  V --> N : Message "Statut mis à jour"
+
+  opt Nouveau statut = livree
+    == Décrémentation du stock ==
+    V -> S : _decrementer_stock(commande)
+    S -> S : Découper commande.items sur ";"
+    loop Pour chaque ligne "nom:id xQuantité (taille)"
+      S -> S : Expression régulière :(\d+)\s+x(\d+)\s+\((.+?)\)
+      alt Taille renseignée (article vestimentaire)
+        S -> DB : SELECT variante (article, taille) WHERE stock >= qté
+        alt Variante trouvée
+          S -> DB : UPDATE variante SET stock = stock - qté
+        else Variante introuvable
+          S -> S : Log "Variante introuvable"
+        end
+      else Sans taille (catégorie Autre)
+        S -> DB : UPDATE article SET stock = stock - qté WHERE stock >= qté
+        alt Aucune ligne mise à jour
+          S -> S : Log "Stock insuffisant"
+        end
+      end
+    end
+    S --> V : Terminé (transaction atomique)
+
+    == Notification au client ==
+    V -> E : Rendre le template email_livraison.html
+    E --> V : Contenu HTML
+    V -> MAIL : send_mail("Votre commande a été livrée")
+    MAIL --> V : fail_silently=True
+    note right of V
+      Le client peut désormais
+      laisser un avis sur les articles
+      de cette commande
+    end note
+  end
+
+else Transition invalide
+  V --> N : Message "Transition de statut invalide"
+end
+
+@enduml

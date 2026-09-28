@@ -1,0 +1,207 @@
+@startuml
+' Diagramme de cas d'utilisation - Ghalisam Boutique
+' Source : ecommerce/urls.py, Articles/views.py, Utilisateurs/{views,admin_views,livreur_views}.py
+
+title Diagramme de cas d'utilisation - Ghalisam Boutique
+
+left to right direction
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam usecaseBackgroundColor #F8FAFC
+skinparam usecaseBorderColor #334155
+skinparam actorBackgroundColor #E2E8F0
+skinparam actorBorderColor #1E293B
+
+actor Visiteur as V
+actor "Client\n(utilisateur connecté)" as C
+actor Livreur as L
+actor Administrateur as A
+
+' =========================================================
+' Système
+' =========================================================
+
+rectangle "Système" {
+  usecase "Envoyer un email (SMTP Gmail)" as UC_EMAIL
+  usecase "Notifier le livreur (WhatsApp)" as UC_WA
+  usecase "Géocoder une adresse (Nominatim)" as UC_GEO
+  usecase "Calculer la distance boutique / client" as UC_DIST
+  usecase "Payer les frais de livraison" as UC_FRAIS
+  usecase "Diffuser la nouvelle commande (WebSocket)" as UC_WS
+}
+
+' =========================================================
+
+rectangle "Boutique (site public)" as BOUTIQUE {
+  usecase "Consulter l'accueil" as UC_ACCUEIL
+  usecase "Parcourir les produits" as UC_LISTE
+  usecase "Rechercher un article" as UC_RECHERCHE
+  usecase "Consulter le détail d'un produit" as UC_DETAIL
+  usecase "Consulter les avis" as UC_AVIS_LIRE
+  usecase "Consulter son panier (invité)" as UC_PANIER_INVITE
+  usecase "S'inscrire" as UC_INSCRIPTION
+  usecase "Se connecter" as UC_CONNEXION
+  usecase "Vérifier son email (code 6 chiffres)" as UC_VERIF
+  usecase "Renvoyer le code de validation" as UC_RENVOYER
+  usecase "Réinitialiser son mot de passe" as UC_MDP
+  usecase "S'inscrire à la newsletter" as UC_NEWS
+  usecase "Envoyer un message via le formulaire de contact" as UC_CONTACT
+  usecase "Consulter FAQ / CGV / CGU / livraison / confidentialité / cookies" as UC_PAGES
+  usecase "Accepter ou refuser les cookies" as UC_COOKIES
+}
+
+rectangle "Espace client" as ESPACE_CLIENT {
+  usecase "Ajouter un article au panier" as UC_AJOUT
+  usecase "Modifier / retirer un article du panier" as UC_MODIF_PANIER
+  usecase "Valider la commande (checkout)" as UC_CHECKOUT
+  usecase "Consulter son profil" as UC_PROFIL
+  usecase "Consulter ses commandes et ses articles livrés" as UC_MES_COMMANDES
+  usecase "Laisser un avis" as UC_AVIS
+  usecase "Modifier son avis" as UC_AVIS_MOD
+  usecase "Supprimer son avis" as UC_AVIS_SUP
+  usecase "Se déconnecter" as UC_DECONNEXION
+}
+
+rectangle "Espace livreur" as ESPACE_LIVREUR {
+  usecase "Consulter son tableau de bord" as UC_LIV_DASH
+  usecase "Consulter ses commandes assignées" as UC_LIV_CMD
+  usecase "Filtrer ses commandes par statut" as UC_LIV_FILTRE
+  usecase "Faire passer la commande en préparation" as UC_LIV_PREP
+  usecase "Faire passer la commande en livraison" as UC_LIV_LIVR
+  usecase "Marquer la commande comme livrée" as UC_LIV_LIVREE
+  usecase "Signaler un échec de livraison" as UC_LIV_ECHEC
+  usecase "Recevoir ses notifications (WebSocket)" as UC_LIV_WS
+  usecase "Consulter ses notifications (API)" as UC_LIV_NOTIF
+  usecase "Marquer ses notifications comme lues" as UC_LIV_LUES
+}
+
+rectangle "Administration" as ADMIN {
+  usecase "Consulter le tableau de bord" as UC_ADM_DASH
+  usecase "Suivre les ventes (CA, graphique)" as UC_ADM_VENTES
+  usecase "Consulter / filtrer les commandes" as UC_ADM_CMD
+  usecase "Attribuer une commande à un livreur" as UC_ADM_ATTRIB
+  usecase "Créer un livreur" as UC_ADM_LIV_CREER
+  usecase "Modifier un livreur" as UC_ADM_LIV_MOD
+  usecase "Activer / désactiver un livreur" as UC_ADM_LIV_TOGGLE
+  usecase "Supprimer un livreur" as UC_ADM_LIV_SUP
+  usecase "Ajouter un article" as UC_ADM_ART_ADD
+  usecase "Modifier un article" as UC_ADM_ART_MOD
+  usecase "Masquer / afficher un article" as UC_ADM_ART_VIS
+  usecase "Supprimer un article" as UC_ADM_ART_SUP
+  usecase "Gérer les variantes de taille" as UC_ADM_VARIANTES
+  usecase "Répondre à un avis" as UC_ADM_REPONSE
+  usecase "Activer / désactiver un abonné newsletter" as UC_ADM_NEWS
+  usecase "Administrer les modèles (Django Admin)" as UC_ADM_DJANGO
+}
+
+' =========================================================
+' Relations Visiteur
+' =========================================================
+
+V -- UC_ACCUEIL
+V -- UC_LISTE
+V -- UC_RECHERCHE
+V -- UC_DETAIL
+V -- UC_AVIS_LIRE
+V -- UC_PANIER_INVITE
+V -- UC_INSCRIPTION
+V -- UC_CONNEXION
+V -- UC_VERIF
+V -- UC_RENVOYER
+V -- UC_MDP
+V -- UC_NEWS
+V -- UC_CONTACT
+V -- UC_PAGES
+V -- UC_COOKIES
+
+' =========================================================
+' Relations Client
+' =========================================================
+
+C -- UC_PANIER_INVITE
+C -- UC_AJOUT
+C -- UC_MODIF_PANIER
+C -- UC_CHECKOUT
+C -- UC_PROFIL
+C -- UC_MES_COMMANDES
+C -- UC_AVIS
+C -- UC_AVIS_MOD
+C -- UC_AVIS_SUP
+C -- UC_NEWS
+C -- UC_RECHERCHE
+C -- UC_DETAIL
+C -- UC_DECONNEXION
+
+' =========================================================
+' Relations Livreur
+' =========================================================
+
+L -- UC_LIV_DASH
+L -- UC_LIV_CMD
+L -- UC_LIV_FILTRE
+L -- UC_LIV_PREP
+L -- UC_LIV_LIVR
+L -- UC_LIV_LIVREE
+L -- UC_LIV_ECHEC
+L -- UC_LIV_WS
+L -- UC_LIV_NOTIF
+L -- UC_LIV_LUES
+L -- UC_CONNEXION
+
+' =========================================================
+' Relations Administrateur
+' =========================================================
+
+A -- UC_ADM_DASH
+A -- UC_ADM_VENTES
+A -- UC_ADM_CMD
+A -- UC_ADM_ATTRIB
+A -- UC_ADM_LIV_CREER
+A -- UC_ADM_LIV_MOD
+A -- UC_ADM_LIV_TOGGLE
+A -- UC_ADM_LIV_SUP
+A -- UC_ADM_ART_ADD
+A -- UC_ADM_ART_MOD
+A -- UC_ADM_ART_VIS
+A -- UC_ADM_ART_SUP
+A -- UC_ADM_VARIANTES
+A -- UC_ADM_REPONSE
+A -- UC_ADM_NEWS
+A -- UC_ADM_DJANGO
+
+' =========================================================
+' Relations internes <<include>> / <<extend>>
+' =========================================================
+
+UC_INSCRIPTION ..> UC_VERIF : <<include>>
+UC_VERIF ..> UC_RENVOYER : <<extend>>
+UC_MDP ..> UC_EMAIL : <<include>>
+UC_INSCRIPTION ..> UC_EMAIL : <<include>>
+UC_CONTACT ..> UC_EMAIL : <<include>>
+UC_NEWS ..> UC_EMAIL : <<include>>
+
+UC_CHECKOUT ..> UC_DIST : <<include>>
+UC_DIST ..> UC_FRAIS : <<include>>
+UC_CHECKOUT ..> UC_WS : <<include>>
+UC_ADM_ATTRIB ..> UC_WS : <<include>>
+UC_ADM_ATTRIB ..> UC_WA : <<include>>
+UC_ADM_ATTRIB ..> UC_LIV_WS : <<include>>
+
+UC_AJOUT ..> UC_GEO : <<extend>>
+UC_PANIER_INVITE ..> UC_GEO : <<extend>>
+
+UC_AVIS ..> UC_AVIS_MOD : <<extend>>
+UC_AVIS ..> UC_AVIS_SUP : <<extend>>
+
+UC_ADM_ART_ADD ..> UC_ADM_VARIANTES : <<include>>
+UC_ADM_ART_MOD ..> UC_ADM_VARIANTES : <<include>>
+
+UC_LIV_PREP ..> UC_LIV_LIVR : <<extend>>
+UC_LIV_LIVR ..> UC_LIV_LIVREE : <<extend>>
+UC_LIV_LIVR ..> UC_LIV_ECHEC : <<extend>>
+
+' Héritage : un Client est aussi un Visiteur connecté
+V <|-- C
+
+@enduml
