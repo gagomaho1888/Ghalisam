@@ -5,9 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Livreur - Mes commandes</title>
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/livreur.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/livreur_notifications.css' %}">
 </head>
 <body>
 {% include 'Articles/nav.html' %}
@@ -17,14 +19,14 @@
         <a href="{% url 'livreur_dashboard' %}">Tableau de bord</a>
         <a href="{% url 'livreur_commandes' %}" class="active">
             Mes commandes
-            <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+            <span class="notif-badge u-hidden" id="notifBadge">0</span>
         </a>
         <a href="{% url 'acceuil' %}">Retour au site</a>
     </aside>
     <main class="livreur-main">
         <h1>Mes commandes</h1>
 
-        <div id="notificationToast" class="notification-toast" style="display:none;">
+        <div id="notificationToast" class="notification-toast u-hidden">
             <div class="toast-content">
                 <span class="toast-icon">🔔</span>
                 <div class="toast-text">
@@ -94,7 +96,7 @@
                         {{ cmd.adresse|default:"—" }}<br>
                         <small>{{ cmd.ville }}{% if cmd.code_postal %}, {{ cmd.code_postal }}{% endif %}</small>
                     </td>
-                    <td style="max-width:200px;word-break:break-word;font-size:0.85em;">{{ cmd.items }}</td>
+                    <td class="cell-items">{{ cmd.items }}</td>
                     <td>{{ cmd.total_price|floatformat:0 }} FCFA</td>
                     <td>{{ cmd.created_at|date:"d/m/Y H:i" }}</td>
                     <td>Paiement à la livraison</td>
@@ -164,7 +166,7 @@
             '<td>' + escapeHtml(data.client) + '</td>',
             '<td>' + escapeHtml(data.telephone) + '</td>',
             '<td>' + escapeHtml(data.adresse) + '</td>',
-            '<td style="max-width:200px;word-break:break-word;font-size:0.85em;">—</td>',
+            '<td class="cell-items">—</td>',
             '<td>' + escapeHtml(data.montant) + ' FCFA</td>',
             '<td>' + new Date().toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) + '</td>',
             '<td>Paiement à la livraison</td>',
@@ -191,27 +193,5 @@
     });
 </script>
 
-<style>
-.notification-toast {
-    position: fixed; top: 80px; right: 20px;
-    background: #1e293b; color: #fff;
-    padding: 14px 18px; border-radius: 10px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-    z-index: 9999; max-width: 380px;
-    animation: slideIn 0.35s ease;
-    cursor: pointer;
-}
-@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-.toast-content { display: flex; align-items: center; gap: 12px; }
-.toast-icon { font-size: 1.5rem; }
-.toast-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.toast-text strong { font-size: 0.9rem; }
-.toast-text span { font-size: 0.8rem; color: #cbd5e1; }
-.toast-close { background: none; border: none; color: #94a3b8; font-size: 1.3rem; cursor: pointer; padding: 0 4px; }
-.toast-close:hover { color: #fff; }
-.nouvelle-ligne { animation: highlightRow 2s ease; }
-@keyframes highlightRow { 0% { background: rgba(59,130,246,0.15); } 100% { background: transparent; } }
-.notif-badge { background: #ef4444; color: #fff; font-size: 0.7rem; padding: 1px 7px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
-</style>
 </body>
 </html>

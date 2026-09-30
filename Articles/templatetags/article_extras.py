@@ -18,54 +18,52 @@ def has_livreur_profile(user):
     except (AttributeError, User.DoesNotExist):
         return False
 
-@register.filter
-def couleur_hex(value):
-    colors = {
-        'noir': 'linear-gradient(135deg,#1f2937,#374151)',
-        'blanc': 'linear-gradient(135deg,#ffffff,#e5e7eb)',
-        'rouge': 'linear-gradient(135deg,#dc2626,#f87171)',
-        'orange': 'linear-gradient(135deg,#ea580c,#fb923c)',
-        'vert': 'linear-gradient(135deg,#16a34a,#4ade80)',
-        'bleu': 'linear-gradient(135deg,#2563eb,#60a5fa)',
-        'bleu denim': 'linear-gradient(135deg,#1e3a8a,#3b5f8a)',
-        'rose': 'linear-gradient(135deg,#db2777,#f472b6)',
-        'marron': 'linear-gradient(135deg,#7c2d12,#b45309)',
-        'brun': 'linear-gradient(135deg,#7c2d12,#b45309)',
-        'gris': 'linear-gradient(135deg,#6b7280,#9ca3af)',
-        'gris fonce': 'linear-gradient(135deg,#374151,#4b5563)',
-        'violet': 'linear-gradient(135deg,#7c3aed,#a78bfa)',
-        'jaune': 'linear-gradient(135deg,#ca8a04,#facc15)',
-        'vert kaki': 'linear-gradient(135deg,#4d7c0f,#84cc16)',
-        'beige': 'linear-gradient(135deg,#b08968,#d6b9a0)',
-        'marine': 'linear-gradient(135deg,#1e3a8a,#312e81)',
-    }
+_COULEURS = frozenset((
+    'noir', 'blanc', 'rouge', 'orange', 'vert', 'bleu', 'bleu denim',
+    'rose', 'marron', 'brun', 'gris', 'gris fonce', 'violet', 'jaune',
+    'vert kaki', 'beige', 'marine',
+))
+
+
+def _resoudre_couleur(value):
+    """Retourne la cle de couleur canonique, ou None si aucune correspondance."""
     if not value:
-        return 'transparent'
+        return None
     normalized = value.lower().strip()
-    if normalized in colors:
-        return colors[normalized]
-    if 'gris' in normalized:
-        return colors['gris']
-    if 'marron' in normalized or 'brun' in normalized:
-        return colors['marron']
-    if 'denim' in normalized:
-        return colors['bleu denim']
-    if 'vert' in normalized or 'kaki' in normalized:
-        return colors['vert']
-    if 'bleu' in normalized:
-        return colors['bleu']
-    if 'blanc' in normalized or 'blanche' in normalized:
-        return colors['blanc']
-    if 'noir' in normalized:
-        return colors['noir']
-    if 'rouge' in normalized:
-        return colors['rouge']
-    if 'orange' in normalized:
-        return colors['orange']
-    if 'rose' in normalized:
-        return colors['rose']
-    if 'violet' in normalized:
-        return colors['violet']
-    if 'jaune' in normalized:
-        return colors['jaune']
-    return 'transparent'
+    if normalized in _COULEURS:
+        return normalized
+    for motif, cle in (
+        ('gris fonce', 'gris fonce'),
+        ('gris', 'gris'),
+        ('marron', 'marron'),
+        ('brun', 'marron'),
+        ('denim', 'bleu denim'),
+        ('kaki', 'vert kaki'),
+        ('vert', 'vert'),
+        ('bleu', 'bleu'),
+        ('marine', 'marine'),
+        ('blanche', 'blanc'),
+        ('blanc', 'blanc'),
+        ('noir', 'noir'),
+        ('rouge', 'rouge'),
+        ('orange', 'orange'),
+        ('rose', 'rose'),
+        ('violet', 'violet'),
+        ('jaune', 'jaune'),
+        ('beige', 'beige'),
+    ):
+        if motif in normalized:
+            return cle
+    return None
+
+
+@register.filter
+def couleur_class(value):
+    """Retourne une classe CSS (couleur-<cle>) au lieu d'un style inline.
+
+    Les declinations sont definies dans static/css/base.css (.couleur-*).
+    Le choix d'une classe (et non d'une valeur CSS) permet de rendre les
+    pastilles de couleur sans 'unsafe-inline' dans la CSP.
+    """
+    cle = _resoudre_couleur(value)
+    return 'couleur-%s' % cle if cle else 'couleur-inconnue'

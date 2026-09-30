@@ -558,3 +558,6 @@
         font-size: 13px;
     }
 }
+.review-zoom { transition: transform .25s ease; }
+.review-zoom:hover { transform: scale(1.03); }
+.review-image-input { display: block; margin-top: 6px; font-size: .85em; }

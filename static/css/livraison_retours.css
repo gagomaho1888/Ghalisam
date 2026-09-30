@@ -1,0 +1,170 @@
+/* Extrait des blocs <style> inline de : livraison_retours.html */
+.lr-hero {
+            background: linear-gradient(135deg, #111 0%, #1a1a2e 100%);
+            color: #fff;
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+        .lr-hero h1 { font-size: 32px; margin-bottom: 8px; }
+        .lr-hero p { color: #aaa; font-size: 16px; }
+        .lr-container {
+            max-width: 860px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .lr-section {
+            background: #fff;
+            border: 1px solid #edf2f7;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        .lr-section h2 {
+            font-size: 20px;
+            color: #111;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .lr-section h2 .lr-icon {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .lr-section h2 .lr-icon.blue { background: #eef2ff; }
+        .lr-section h2 .lr-icon.green { background: #e5faf0; }
+        .lr-section h2 .lr-icon.orange { background: #fef3c7; }
+        .lr-section h2 .lr-icon.red { background: #fee2e2; }
+        .lr-section h2 .lr-icon.purple { background: #f3e8ff; }
+        .lr-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .lr-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        @media (max-width: 600px) { .lr-grid { grid-template-columns: 1fr; } }
+        .lr-card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 18px;
+        }
+        .lr-card h3 {
+            font-size: 14px;
+            color: #111;
+            margin-bottom: 6px;
+        }
+        .lr-card p {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .lr-card .lr-highlight {
+            font-size: 22px;
+            font-weight: 800;
+            color: #3a7bd5;
+            margin-bottom: 4px;
+        }
+        .lr-steps {
+            counter-reset: step;
+            list-style: none;
+            padding: 0;
+        }
+        .lr-steps li {
+            counter-increment: step;
+            position: relative;
+            padding: 12px 0 12px 50px;
+            font-size: 14px;
+            color: #444;
+            border-bottom: 1px solid #f5f5f5;
+            line-height: 1.6;
+        }
+        .lr-steps li:last-child { border-bottom: none; }
+        .lr-steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0; top: 10px;
+            width: 32px; height: 32px;
+            background: #00d2ff;
+            color: #111;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .lr-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        .lr-table th {
+            background: #f1f5f9;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+            color: #333;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .lr-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+        }
+        .lr-table tr:last-child td { border-bottom: none; }
+        .lr-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .lr-badge-free { background: #e5faf0; color: #16a34a; }
+        .lr-badge-paid { background: #fef3c7; color: #92400e; }
+        .lr-note {
+            background: #eef2ff;
+            border-left: 4px solid #3a7bd5;
+            padding: 14px 18px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #333;
+            line-height: 1.6;
+        }
+        .lr-cta {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .lr-cta a {
+            display: inline-block;
+            background: #00d2ff;
+            color: #111;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .lr-cta a:hover {
+            background: #3a7bd5;
+            color: #fff;
+        }
+
+
+/* Listes de la page Livraison & retours (anciens style=") */
+.lr-list { list-style: none; padding: 0; }
+.lr-list-item { padding: 8px 0; font-size: 14px; color: #444; }
+.lr-list-item.is-divided { border-bottom: 1px solid #f5f5f5; }

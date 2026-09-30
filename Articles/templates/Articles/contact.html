@@ -5,168 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contactez-nous - Ghalisam</title>
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
-    <style>
-        .contact-hero {
-            background: linear-gradient(135deg, #111 0%, #1a1a2e 100%);
-            color: #fff;
-            text-align: center;
-            padding: 60px 20px 40px;
-        }
-        .contact-hero h1 {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-        .contact-hero p {
-            color: #aaa;
-            font-size: 16px;
-        }
-        .contact-container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-        @media (max-width: 700px) {
-            .contact-container { grid-template-columns: 1fr; }
-        }
-        .contact-info {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .contact-card {
-            background: #fff;
-            border: 1px solid #edf2f7;
-            border-radius: 12px;
-            padding: 24px;
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            transition: 0.2s;
-        }
-        .contact-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            transform: translateY(-2px);
-        }
-        .contact-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 22px;
-        }
-        .icon-whatsapp { background: #e5faf0; color: #25D366; }
-        .icon-email { background: #eef2ff; color: #3a7bd5; }
-        .icon-phone { background: #fef3c7; color: #d97706; }
-        .icon-location { background: #fee2e2; color: #dc2626; }
-        .icon-hours { background: #f0fdf4; color: #16a34a; }
-        .contact-card-text h3 {
-            font-size: 15px;
-            color: #111;
-            margin-bottom: 4px;
-        }
-        .contact-card-text p {
-            font-size: 13px;
-            color: #666;
-            line-height: 1.5;
-        }
-        .contact-card-text a {
-            color: #3a7bd5;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .contact-card-text a:hover {
-            text-decoration: underline;
-        }
-        .contact-form-box {
-            background: #fff;
-            border: 1px solid #edf2f7;
-            border-radius: 12px;
-            padding: 30px;
-        }
-        .contact-form-box h2 {
-            font-size: 20px;
-            margin-bottom: 20px;
-            color: #111;
-        }
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 11px 14px;
-            border: 1px solid #d6d8e0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.2s;
-        }
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: #00d2ff;
-            box-shadow: 0 0 0 3px rgba(0,210,255,0.1);
-        }
-        .form-group textarea {
-            resize: vertical;
-            min-height: 110px;
-        }
-        .form-submit {
-            width: 100%;
-            padding: 12px;
-            background: #00d2ff;
-            color: #111;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .form-submit:hover {
-            background: #3a7bd5;
-            color: #fff;
-        }
-        .contact-success {
-            text-align: center;
-            padding: 40px 20px;
-        }
-        .contact-success .check {
-            width: 60px; height: 60px;
-            background: #00d2ff;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 16px;
-            font-size: 28px; color: #111;
-        }
-        .contact-success h3 {
-            color: #111;
-            margin-bottom: 8px;
-        }
-        .contact-success p {
-            color: #666;
-            font-size: 14px;
-        }
-    </style>
-</head>
+    <link rel="stylesheet" href="{% static 'css/contact.css' %}">
+    </head>
 <body>
 {% include 'Articles/nav.html' %}
 
@@ -231,7 +74,7 @@
         </div>
         {% else %}
         {% if error %}
-        <div class="message" style="margin-bottom:16px;">{{ error }}</div>
+        <div class="message u-mb-16">{{ error }}</div>
         {% endif %}
         <form method="post">
             {% csrf_token %}

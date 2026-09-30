@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
     font-family: 'Poppins', Arial, sans-serif;
@@ -268,4 +267,117 @@ footer {
     color: white;
     text-align: center;
     padding: 20px;
+}
+
+/* ---------------------------------------------------------------------------
+   Utilitaires partages (remplacent les anciens attributs style="...")
+   --------------------------------------------------------------------------- */
+
+/* Alignement vertical des icones SVG dans un texte */
+.u-ico { vertical-align: middle; }
+.u-ico-right-4 { vertical-align: middle; margin-right: 4px; }
+.u-ico-right-6 { vertical-align: middle; margin-right: 6px; }
+.u-ico-right-8 { vertical-align: middle; margin-right: 8px; }
+.u-ico-top-4 { vertical-align: middle; margin-top: -4px; }
+.u-ico-top-2 { vertical-align: middle; margin-top: -2px; }
+.u-ico-top-3-right-6 { vertical-align: middle; margin-top: -3px; margin-right: 6px; }
+.u-ico-nudge-4 { vertical-align: -2px; margin-right: 4px; }
+.u-ico-nudge-6 { vertical-align: -2px; margin-right: 6px; }
+.u-ico-nudge-2 { vertical-align: -2px; }
+.u-ico-nudge-1 { vertical-align: -1px; }
+
+/* Liens */
+.u-link-blue { color: #3a7bd5; }
+.u-link-blue-strong { color: #3b82f6; font-weight: 600; }
+.u-link-blue-plain { color: #3a7bd5; text-decoration: none; font-size: 14px; }
+.u-link-cyan { color: #00d2ff; }
+.u-footer-link { color: #666; text-decoration: none; font-size: 13px; margin-left: 15px; }
+
+/* Texte */
+.u-text-center-muted { text-align: center; color: #555; margin-bottom: 20px; }
+.u-text-center-mt-14 { text-align: center; margin-top: 14px; }
+.u-text-555 { color: #555; }
+.u-text-777-13 { color: #777; font-size: 13px; }
+.u-text-dim-13 { color: #64748b; font-size: 13px; margin-bottom: 12px; }
+.u-text-xs-dim { font-size: 12px; color: #94a3b8; }
+.u-text-strong-sm { font-size: 13px; color: #111; }
+.u-text-teal { color: #11998e; }
+.u-text-14 { font-size: 14px; }
+.u-empty-20-555 { margin-top: 20px; color: #555; }
+.u-guest-note { margin-top: 16px; color: #333; font-weight: 700; }
+
+/* Affichage */
+.u-hidden { display: none; }
+.u-inline { display: inline; }
+.u-block-center-mt-16 { display: block; text-align: center; margin-top: 16px; }
+.u-mt-0 { margin-top: 0; }
+.u-mb-16 { margin-bottom: 16px; }
+.u-reset-margin { margin: 0; }
+.u-row-center-16 { justify-content: center; margin-top: 16px; }
+
+/* Messages */
+.u-msg-success { background: #e5fee5; color: #006600; border-color: #c5f3c5; }
+
+/* Saisie de code de verification */
+.u-code-input { text-align: center; font-size: 24px; letter-spacing: 8px; }
+
+/* Pastilles de couleur produit (voir filtre couleur_class) */
+.couleur-inconnue { background: transparent; }
+.couleur-noir         { background: linear-gradient(135deg, #1f2937, #374151); }
+.couleur-blanc        { background: linear-gradient(135deg, #ffffff, #e5e7eb); }
+.couleur-rouge        { background: linear-gradient(135deg, #dc2626, #f87171); }
+.couleur-orange       { background: linear-gradient(135deg, #ea580c, #fb923c); }
+.couleur-vert         { background: linear-gradient(135deg, #16a34a, #4ade80); }
+.couleur-bleu         { background: linear-gradient(135deg, #2563eb, #60a5fa); }
+.couleur-bleu-denim   { background: linear-gradient(135deg, #1e3a8a, #3b5f8a); }
+.couleur-marine       { background: linear-gradient(135deg, #1e3a8a, #312e81); }
+.couleur-rose         { background: linear-gradient(135deg, #db2777, #f472b6); }
+.couleur-marron       { background: linear-gradient(135deg, #7c2d12, #b45309); }
+.couleur-gris         { background: linear-gradient(135deg, #6b7280, #9ca3af); }
+.couleur-gris-fonce   { background: linear-gradient(135deg, #374151, #4b5563); }
+.couleur-violet       { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+.couleur-jaune        { background: linear-gradient(135deg, #ca8a04, #facc15); }
+.couleur-vert-kaki    { background: linear-gradient(135deg, #4d7c0f, #84cc16); }
+.couleur-beige        { background: linear-gradient(135deg, #b08968, #d6b9a0); }
+
+.couleur-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,.12);
+    display: inline-block;
+    box-shadow: 0 1px 3px rgba(0,0,0,.15);
+}
+
+
+/* ---------------------------------------------------------------------------
+   Pastille de couleur produit (remplace les style=" dynamiques)
+   Utilisee par acceuil.html, produit_list.html et produit_detail.html.
+   --------------------------------------------------------------------------- */
+.product-couleur {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    color: #64748b;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+}
+.product-couleur--compact { justify-content: flex-start; }
+.product-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.product-marque { font-size: 12px; color: #94a3b8; }
+
+/* Bouton de deconnexion : herite de .nav-btn sans reset navigateur */
+.nav-form-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: inherit;
+    font: inherit;
 }

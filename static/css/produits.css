@@ -104,3 +104,4 @@
     border-color: #111;
     cursor: default;
 }
+.search-icon { flex-shrink: 0; }

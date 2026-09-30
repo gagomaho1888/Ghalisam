@@ -1,0 +1,22 @@
+/* Extrait des blocs <style> inline de : article_form.html */
+.article-form { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 24px; max-width: 720px; margin-top: 16px; }
+        .article-form label { display: block; font-size: 0.85rem; color: #475569; margin: 12px 0 4px; font-weight: 600; }
+        .article-form input[type="text"], .article-form input[type="number"], .article-form textarea, .article-form select, .article-form input[type="file"] { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; box-sizing: border-box; }
+        .article-form input:focus, .article-form textarea:focus, .article-form select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+        .article-form .error { color: #dc2626; font-size: 0.8rem; margin-top: 2px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+        .form-row { margin-bottom: 4px; }
+        .check-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+        .check-row input { width: auto; }
+        .check-row label { margin: 0; }
+        .variant-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-top: 10px; }
+        .variant-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; align-items: end; }
+        .variant-row label { margin-top: 0; }
+        .variant-remove { display: inline-block; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
+        .add-variant { display: inline-block; margin-top: 12px; background: #e2e8f0; color: #1e293b; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; font-size: 0.85rem; }
+        .add-variant:hover { background: #cbd5e1; }
+        .section-title { font-size: 1rem; color: #1e293b; margin: 24px 0 4px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; }
+        .btn { margin-top: 20px; }
+        .current-img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-top: 8px; border: 1px solid #e2e8f0; }
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #475569; font-size: 0.85rem; margin-top: 12px !important; }
+        .checkbox-label input { width: 16px; height: 16px; }

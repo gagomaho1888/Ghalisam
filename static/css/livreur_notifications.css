@@ -1,0 +1,29 @@
+/* Extrait des blocs <style> inline de : livreur_dashboard.html, livreur_commandes.html */
+.notification-toast {
+    position: fixed; top: 80px; right: 20px;
+    background: #1e293b; color: #fff;
+    padding: 14px 18px; border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    z-index: 9999; max-width: 380px;
+    animation: slideIn 0.35s ease;
+    cursor: pointer;
+}
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast-content { display: flex; align-items: center; gap: 12px; }
+.toast-icon { font-size: 1.5rem; }
+.toast-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.toast-text strong { font-size: 0.9rem; }
+.toast-text span { font-size: 0.8rem; color: #cbd5e1; }
+.toast-close { background: none; border: none; color: #94a3b8; font-size: 1.3rem; cursor: pointer; padding: 0 4px; }
+.toast-close:hover { color: #fff; }
+.nouvelle-ligne { animation: highlightRow 2s ease; }
+@keyframes highlightRow { 0% { background: rgba(59,130,246,0.15); } 100% { background: transparent; } }
+.notif-badge { background: #ef4444; color: #fff; font-size: 0.7rem; padding: 1px 7px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+
+
+/* Colonne articles du tableau des commandes livreur */
+.cell-items {
+    max-width: 200px;
+    word-break: break-word;
+    font-size: .85em;
+}

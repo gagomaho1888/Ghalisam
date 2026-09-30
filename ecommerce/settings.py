@@ -62,17 +62,42 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 # ou quand CSP_ENABLED=True explicitement (utile pour tester en dev).
 CSP_ENABLED = env_bool('DJANGO_CSP_ENABLED', not DEBUG)
 
+# Hôtes OSM exacts. Aucun wildcard : `https://*.tile.openstreetmap.org`
+# autoriserait n'importe quel sous-domaine-préprefixe (source du rapport ZAP).
+# Leaflet n'utilise que `https://tile.openstreetmap.org` (voir commande.html) :
+# on n'autorise donc que l'origine réellement employée (principe du moindre
+# privilège). Ajouter `a/b/c.tile...` uniquement si un sharding est mis en place.
+OSM_TILE_ORIGINS = [
+    'https://tile.openstreetmap.org',
+]
+
+# Polices auto-hébergées (static/fonts/*.woff2) : plus aucune origine tierce
+# pour style-src / font-src, donc plus besoin de SRI sur ces ressources.
 CONTENT_SECURITY_POLICY = {
     "default-src": "'self'",
     "script-src": "'self' __NONCE__",
-    "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src": "'self' data: https://fonts.gstatic.com",
-    "img-src": "'self' data: https://via.placeholder.com https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://res.cloudinary.com",
+    # __NONCE__ couvre les rares <style nonce="{{ csp_nonce }}"> restants
+    # (styles dynamiques). 'unsafe-inline' est volontairement absent.
+    "style-src": "'self' __NONCE__",
+    "font-src": "'self'",
+    "img-src": "'self' data: blob: https://res.cloudinary.com " + " ".join(OSM_TILE_ORIGINS),
     "connect-src": "'self' ws: wss: https://res.cloudinary.com",
+    "worker-src": "'self' blob:",
+    "manifest-src": "'self'",
     "object-src": "'none'",
     "base-uri": "'self'",
     "frame-ancestors": "'none'",
     "form-action": "'self'",
+    "upgrade-insecure-requests": "",
+}
+
+# Exception limitée à /admin/ : l'admin Django embarqué (change_list.html)
+# contient un bloc <style> que l'on ne peut pas noncer sans surcharger tout
+# le gabarit de l'admin. Le compte est staff-only et derrière authentification,
+# donc on n'assouplit que style-src, et seulement pour ce préfixe de chemin.
+CSP_ADMIN_PATHS = ('/admin',)
+CSP_ADMIN_POLICY_OVERRIDES = {
+    "style-src": "'self' 'unsafe-inline'",
 }
 
 

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - Ghalisam</title>
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
@@ -28,8 +29,8 @@
         <button type="submit">Se connecter</button>
     </form>
 
-    <div style="text-align:center; margin-top:14px;">
-        <a href="{% url 'mot_de_passe_oublie' %}" style="color:#3a7bd5; text-decoration:none; font-size:14px;">Mot de passe oublié ?</a>
+    <div class="u-text-center-mt-14">
+        <a class="u-link-blue-plain" href="{% url 'mot_de_passe_oublie' %}">Mot de passe oublié ?</a>
     </div>
 
     <div class="link-row">

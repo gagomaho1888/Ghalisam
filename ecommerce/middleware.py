@@ -8,9 +8,15 @@ def csp_nonce(request):
     return {'csp_nonce': getattr(request, 'csp_nonce', '')}
 
 
-def build_csp_header():
-    """Génère la politique Content-Security-Policy à partir des settings."""
-    pol = settings.CONTENT_SECURITY_POLICY
+def build_csp_header(policy=None, overrides=None):
+    """Génère la politique Content-Security-Policy à partir des settings.
+
+    `overrides` permet d'assouplir ponctuellement une directive (voir
+    CSP_ADMIN_POLICY_OVERRIDES pour /admin/).
+    """
+    pol = policy or settings.CONTENT_SECURITY_POLICY
+    if overrides:
+        pol = {**pol, **overrides}
     parts = []
     for directive, values in pol.items():
         if not values:
@@ -18,6 +24,14 @@ def build_csp_header():
         else:
             parts.append(f"{directive} {values}")
     return "; ".join(parts)
+
+
+def get_policy_overrides(request):
+    """Retourne les surcharges de directives CSP applicables à cette requête."""
+    admin_paths = getattr(settings, 'CSP_ADMIN_PATHS', ())
+    if admin_paths and request.path.startswith(admin_paths):
+        return getattr(settings, 'CSP_ADMIN_POLICY_OVERRIDES', {})
+    return {}
 
 
 class CSPMiddleware:
@@ -31,8 +45,8 @@ class CSPMiddleware:
         response = self.get_response(request)
         if getattr(settings, 'CSP_ENABLED', False):
             nonce_sources = f"'nonce-{request.csp_nonce}'"
-            policy = build_csp_header().replace('__NONCE__', nonce_sources)
-            response['Content-Security-Policy'] = policy
+            policy = build_csp_header(overrides=get_policy_overrides(request))
+            response['Content-Security-Policy'] = policy.replace('__NONCE__', nonce_sources)
         return response
 
 

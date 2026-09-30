@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Gestion des livreurs</title>
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/admin.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
@@ -67,13 +68,13 @@
                     <td>{{ livreur.date_creation|date:"d/m/Y" }}</td>
                     <td class="actions">
                         <a href="{% url 'edit_livreur' livreur.id %}" class="btn-sm">Modifier</a>
-                        <form method="post" action="{% url 'toggle_livreur' livreur.id %}" style="display:inline">
+                        <form class="u-inline" method="post" action="{% url 'toggle_livreur' livreur.id %}">
                             {% csrf_token %}
                             <button type="submit" class="btn-sm btn-warning">
                                 {% if livreur.est_actif %}Désactiver{% else %}Activer{% endif %}
                             </button>
                         </form>
-                        <form method="post" action="{% url 'delete_livreur' livreur.id %}" style="display:inline" data-confirm="Supprimer ce livreur ?">
+                        <form class="u-inline" method="post" action="{% url 'delete_livreur' livreur.id %}" data-confirm="Supprimer ce livreur ?">
                             {% csrf_token %}
                             <button type="submit" class="btn-sm btn-danger">Supprimer</button>
                         </form>

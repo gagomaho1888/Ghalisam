@@ -1,0 +1,26 @@
+/* Extrait des blocs <style> inline de : admin_dashboard.html */
+.notif-panel{position:fixed;top:80px;right:20px;width:380px;max-height:80vh;overflow-y:auto;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:9999;display:none;border:1px solid #e2e8f0}
+        .notif-panel.show{display:block}
+        .notif-header{padding:14px 18px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+        .notif-header h3{margin:0;font-size:15px;color:#111}
+        .notif-close{background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8}
+        .notif-item{padding:14px 18px;border-bottom:1px solid #f1f5f9;animation:slideIn .3s ease}
+        .notif-item:last-child{border-bottom:none}
+        .notif-item .ticket{font-weight:700;color:#3a7bd5}
+        .notif-item .client{color:#555;font-size:13px}
+        .notif-item .montant{color:#059669;font-weight:600;font-size:13px}
+        .notif-item .articles{color:#777;font-size:12px;margin-top:4px}
+        .notif-item .date{color:#94a3b8;font-size:11px;margin-top:4px}
+        .notif-badge{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;font-size:11px;font-weight:700;border-radius:50%;min-width:20px;height:20px;display:flex;align-items:center;justify-content:center;display:none}
+        .notif-badge.show{display:flex}
+        .bell-btn{position:relative;background:none;border:none;cursor:pointer;padding:8px}
+        .bell-btn svg{width:22px;height:22px;stroke:#64748b;fill:none;stroke-width:2}
+        @keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+        .sound-btn{background:none;border:1px solid #e2e8f0;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;color:#555}
+        .sound-btn.active{background:#3a7bd5;color:#fff;border-color:#3a7bd5}
+
+
+/* Anciens style=" de admin_dashboard.html */
+.admin-row-between { display: flex; justify-content: space-between; align-items: center; }
+.admin-row-gap { display: flex; align-items: center; gap: 12px; }
+.admin-empty-inline { padding: 20px; text-align: center; color: #94a3b8; font-size: 13px; }

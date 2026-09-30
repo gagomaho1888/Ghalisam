@@ -60,3 +60,82 @@
 .statut-en_attente          { background: #fef3c7; color: #92400e; }
 .statut-livree              { background: #d1fae5; color: #065f46; }
 .statut-livraison_echouee   { background: #fee2e2; color: #991b1b; }
+
+/* Regles extraites des attributs style="" de profil.html */
+.profile-row.is-spaced { margin-top: 30px; }
+.profile-item.is-full { grid-column: 1 / -1; }
+.review-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+.review-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.review-card img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+.review-card-img-ph {
+    width: 100%;
+    height: 100px;
+    background: #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+}
+.review-card-meta { font-size: 11px; color: #94a3b8; margin: 4px 0; }
+.review-done {
+    font-size: 12px;
+    color: #059669;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.review-cta {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 8px 16px;
+    background: #f59e0b;
+    color: white;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+}
+.order-list { list-style: none; padding: 0; margin: 0; }
+.order-item {
+    margin-bottom: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #edf2f7;
+}
+.order-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.order-meta {
+    margin-top: 6px;
+    font-size: 13px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}

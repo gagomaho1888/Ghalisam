@@ -199,3 +199,52 @@ button.small:hover {
 @media(max-width: 920px) {
     .container { grid-template-columns: 1fr; }
 }
+
+/* Regles extraites des attributs style="" de commande.html */
+.qty-badge { padding: 0 12px; font-weight: 700; }
+.cart-hint { color: #999; font-size: 12px; }
+.cart-subtotal { width: 120px; text-align: right; font-weight: 700; }
+.totals-list {
+    flex-direction: column;
+    gap: 8px;
+    border: none;
+    padding: 0;
+    margin-top: 10px;
+}
+.total-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 400;
+}
+.total-line.is-muted { color: #666; }
+.total-line.is-grand {
+    font-size: 20px;
+    font-weight: 700;
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+}
+.info-box {
+    margin-top: 16px;
+    padding: 14px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 12px;
+}
+.info-box.is-tight { margin-top: 12px; }
+.info-box-title { font-weight: 700; font-size: 15px; }
+.info-box-text { font-size: 13px; margin-top: 6px; }
+.info-box-text.is-tight { margin-top: 4px; }
+.input-readonly {
+    background: rgba(255,255,255,0.5);
+    color: #555;
+    font-style: italic;
+}
+.guest-actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-as-link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+.livraison-note.is-spaced { margin-top: 12px; }
+.frais-text-line { font-size: 13px; margin-top: 6px; }

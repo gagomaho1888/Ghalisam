@@ -5,21 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Gestion de la boutique</title>
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/admin.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
-    <style>
-        .thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .thumb-ph { width: 50px; height: 50px; border-radius: 8px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
-        .badge-dispo { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-        .badge-dispo.yes { background: #d1fae5; color: #065f46; }
-        .badge-dispo.no { background: #fee2e2; color: #991b1b; }
-        .search-bar { display: flex; gap: 8px; margin-bottom: 16px; }
-        .search-bar input, .search-bar select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem; }
-        .search-bar .btn-primary { padding: 8px 16px; }
-        .stock-cell { font-weight: 600; }
-    </style>
-</head>
+    <link rel="stylesheet" href="{% static 'css/admin_boutique.css' %}">
+    </head>
 <body>
 {% include 'Articles/nav.html' %}
 <div class="admin-wrapper">
@@ -97,11 +88,11 @@
                     <td>
                         <div class="actions">
                             <a href="{% url 'modifier_article' article.id %}" class="btn-sm">Modifier</a>
-                            <form method="post" action="{% url 'basculer_disponible' article.id %}" style="display:inline;">
+                            <form class="u-inline" method="post" action="{% url 'basculer_disponible' article.id %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn-sm btn-warning">{{ article.disponible|yesno:"Masquer,Afficher" }}</button>
                             </form>
-                            <form method="post" action="{% url 'supprimer_article' article.id %}" style="display:inline;" data-confirm="Supprimer cet article ?">
+                            <form class="u-inline" method="post" action="{% url 'supprimer_article' article.id %}" data-confirm="Supprimer cet article ?">
                                 {% csrf_token %}
                                 <button type="submit" class="btn-sm btn-danger">Supprimer</button>
                             </form>

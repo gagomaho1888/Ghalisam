@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Réinitialiser le mot de passe - Ghalisam</title>
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
@@ -20,21 +21,21 @@
     {% endif %}
 
     {% if step == "code" %}
-    <p style="text-align:center; color:#555; margin-bottom:20px;">
+    <p class="u-text-center-muted">
         Un code a été envoyé à <strong>{{ email }}</strong>.
         Entrez-le ci-dessous.
     </p>
     <form method="post">
         {% csrf_token %}
         <label for="code">Code de vérification</label>
-        <input type="text" id="code" name="code" placeholder="000000" maxlength="6"
+        <input class="u-code-input" type="text" id="code" name="code" placeholder="000000" maxlength="6"
                pattern="[0-9]{6}" inputmode="numeric" required
-               style="text-align:center; font-size:24px; letter-spacing:8px;">
+              >
         <button type="submit">Vérifier le code</button>
     </form>
 
     {% elif step == "new_password" %}
-    <p style="text-align:center; color:#555; margin-bottom:20px;">
+    <p class="u-text-center-muted">
         Code vérifié ! Entrez votre nouveau mot de passe.
     </p>
     <form method="post">

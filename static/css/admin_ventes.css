@@ -1,0 +1,34 @@
+/* Extrait des blocs <style> inline de : suivi_ventes.html */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin: 16px 0; }
+        .kpi-card { background: #fff; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+        .kpi-label { display: block; font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; color: #64748b; }
+        .kpi-value { display: block; font-size: 1.5rem; font-weight: 700; color: #0f172a; margin: 6px 0 4px; }
+        .kpi-value.principal { color: #3b82f6; }
+        .kpi-sub { display: block; font-size: .78rem; color: #94a3b8; }
+        .evolution { display: inline-block; font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+        .evolution.haut { background: #d1fae5; color: #065f46; }
+        .evolution.bas { background: #fee2e2; color: #991b1b; }
+        .evolution.neutre { background: #e2e8f0; color: #475569; }
+
+        .graphe-card { background: #fff; border-radius: 8px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,.08); margin-top: 8px; }
+        .graphe-entete { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+        .graphe-titre { margin: 0; font-size: 1rem; color: #1e293b; }
+        .legende { display: flex; gap: 16px; font-size: .78rem; color: #64748b; }
+        .legende span { display: flex; align-items: center; gap: 6px; }
+        .legende i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+        .legende .sw-ca { background: #3b82f6; }
+        .legende .sw-cmd { background: #f59e0b; }
+
+        .graphe { display: flex; align-items: flex-end; gap: 4px; height: 240px; padding: 0 4px; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
+        .colonne { flex: 1 0 22px; min-width: 22px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 2px; cursor: default; }
+        .colonne:hover { background: #f1f5f9; border-radius: 4px 4px 0 0; }
+        .barre-ca { width: 60%; background: #3b82f6; border-radius: 3px 3px 0 0; min-height: 2px; }
+        .barre-cmd { width: 60%; background: #f59e0b; border-radius: 0 0 3px 3px; min-height: 2px; }
+        .axe { display: flex; gap: 4px; padding-top: 6px; overflow-x: hidden; }
+        .axe span { flex: 1 0 22px; min-width: 22px; text-align: center; font-size: .62rem; color: #94a3b8; white-space: nowrap; }
+        .vide-graphe { text-align: center; color: #94a3b8; font-size: .88rem; padding: 60px 0; }
+
+
+/* Anciens style=" de suivi_ventes.html */
+.admin-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.table-total-row { background: #f1f5f9; font-weight: 700; }
