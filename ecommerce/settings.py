@@ -81,7 +81,11 @@ CONTENT_SECURITY_POLICY = {
     "style-src": "'self' __NONCE__",
     "font-src": "'self'",
     "img-src": "'self' data: blob: https://res.cloudinary.com " + " ".join(OSM_TILE_ORIGINS),
-    "connect-src": "'self' ws: wss: https://res.cloudinary.com",
+    # Le WebSocket de notifications est same-origin (static/js/notifications.js
+    # construit wss:// depuis window.location.host) : `'self'` couvre donc déjà
+    # ws:/wss:. Les retirer supprime la directive `ws:`/`wss:` signalée par ZAP
+    # (10055), qui autorisait n'importe quel hôte en ws/wss.
+    "connect-src": "'self' https://res.cloudinary.com",
     "worker-src": "'self' blob:",
     "manifest-src": "'self'",
     "object-src": "'none'",
@@ -343,6 +347,13 @@ STORAGES = {
 # Whitenoise : cache long pour les fichiers statiques et mediums
 WHITENOISE_MAX_AGE = 31536000
 WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ()
+
+# Whitenoise ajoute par défaut 'Access-Control-Allow-Origin: *' sur tous les
+# fichiers statiques (whitenoise/base.py). Les polices sont auto-hebergees et
+# les images viennent de Cloudinary : rien n'est charge en cross-origin, ce
+# header n'apporte donc rien et ZAP le signale (10098). On le desactive pour
+# que la politique d'origine reste la seule autorisee.
+WHITENOISE_ALLOW_ALL_ORIGINS = False
 
 
 # ---------------------------------------------------------------------------
