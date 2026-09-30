@@ -260,7 +260,7 @@ def _notifier_nouvelle_commande(ticket, user, delivery, total, item_descriptions
     if admin_email:
         try:
             send_mail(
-                subject=f'Nouvelle commande {ticket} - Ghalisam Boutique',
+                subject=f'Nouvelle commande {ticket} - Ghalisam',
                 message=message_text,
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[admin_email],

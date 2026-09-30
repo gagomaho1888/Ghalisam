@@ -1,8 +1,8 @@
 @startuml
-' Diagramme de cas d'utilisation - Ghalisam Boutique
+' Diagramme de cas d'utilisation - Ghalisam
 ' Source : ecommerce/urls.py, Articles/views.py, Utilisateurs/{views,admin_views,livreur_views}.py
 
-title Diagramme de cas d'utilisation - Ghalisam Boutique
+title Diagramme de cas d'utilisation - Ghalisam
 
 left to right direction
 skinparam shadowing false

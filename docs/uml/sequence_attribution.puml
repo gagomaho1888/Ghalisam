@@ -1,5 +1,5 @@
 @startuml
-' Ghalisam Boutique - Attribution d'une commande à un livreur
+' Ghalisam - Attribution d'une commande à un livreur
 ' Source : Utilisateurs/admin_views.py::attribuer_commande(), Utilisateurs/whatsapp.py
 
 title Attribution d'une commande à un livreur (Administrateur)

@@ -64,8 +64,8 @@ def _envoyer_code(user):
     profil.save()
 
     send_mail(
-        subject='Code de vérification - Ghalisam Boutique',
-        message=f'Bonjour {user.first_name},\n\nVotre code de vérification est : {code}\n\nCe code est valide pendant 10 minutes.\n\nGhalisam Boutique',
+        subject='Code de vérification - Ghalisam',
+        message=f'Bonjour {user.first_name},\n\nVotre code de vérification est : {code}\n\nCe code est valide pendant 10 minutes.\n\nGhalisam',
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=[user.email],
         fail_silently=False,
@@ -138,8 +138,8 @@ def inscription(request):
             }
 
             send_mail(
-                subject='Code de vérification - Ghalisam Boutique',
-                message=f'Bonjour {first_name},\n\nVotre code de vérification est : {code}\n\nCe code est valide pendant 10 minutes.\n\nGhalisam Boutique',
+                subject='Code de vérification - Ghalisam',
+                message=f'Bonjour {first_name},\n\nVotre code de vérification est : {code}\n\nCe code est valide pendant 10 minutes.\n\nGhalisam',
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[email],
                 fail_silently=False,
@@ -268,8 +268,8 @@ def resend_code(request):
         pending['code_validation_expires'] = expires
         request.session['pending_user'] = pending
         send_mail(
-            subject='Code de vérification - Ghalisam Boutique',
-            message=f'Bonjour {pending["first_name"]},\n\nVotre code de vérification est : {code}\n\nCe code est valide pendant 10 minutes.\n\nGhalisam Boutique',
+            subject='Code de vérification - Ghalisam',
+            message=f'Bonjour {pending["first_name"]},\n\nVotre code de vérification est : {code}\n\nCe code est valide pendant 10 minutes.\n\nGhalisam',
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[pending['email']],
             fail_silently=False,
@@ -389,8 +389,8 @@ def mot_de_passe_oublie(request):
                     profil.save()
 
                     send_mail(
-                        subject='Réinitialisation mot de passe - Ghalisam Boutique',
-                        message=f'Bonjour {user.first_name},\n\nVotre code de réinitialisation est : {code}\n\nCe code est valide pendant 10 minutes.\n\nSi vous n\'avez pas demandé cette réinitialisation, ignorez cet email.\n\nGhalisam Boutique',
+                        subject='Réinitialisation mot de passe - Ghalisam',
+                        message=f'Bonjour {user.first_name},\n\nVotre code de réinitialisation est : {code}\n\nCe code est valide pendant 10 minutes.\n\nSi vous n\'avez pas demandé cette réinitialisation, ignorez cet email.\n\nGhalisam',
                         from_email=settings.EMAIL_HOST_USER,
                         recipient_list=[user.email],
                         fail_silently=False,

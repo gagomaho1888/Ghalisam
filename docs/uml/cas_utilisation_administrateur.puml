@@ -1,0 +1,97 @@
+@startuml
+' ===========================================================================
+' Cas d'utilisation - Administrateur de Ghalisam
+' Source : Utilisateurs/admin_views.py, Utilisateurs/decorators.py,
+'          ecommerce/urls.py
+' ===========================================================================
+
+title Cas d'utilisation - Administrateur
+
+left to right direction
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam usecaseBackgroundColor #F8FAFC
+skinparam usecaseBorderColor #334155
+skinparam actorBackgroundColor #E2E8F0
+skinparam actorBorderColor #1E293B
+skinparam rectangleBackgroundColor #FFFFFF
+skinparam rectangleBorderColor #64748B
+skinparam defaultFontSize 12
+skinparam dpi 150
+
+actor "Administrateur" as A
+
+rectangle "Pilotage et catalogue" as PILOTAGE {
+  usecase "Consulter le tableau de bord" as UC_DASH
+  usecase "Suivre les ventes (chiffre d'affaires)" as UC_VENTES
+  usecase "Consulter et filtrer les commandes" as UC_CMD
+  usecase "Ajouter ou modifier un article" as UC_ART_EDIT
+  usecase "Masquer, afficher ou supprimer un article" as UC_ART_VIS
+  usecase "Gérer les variantes de taille" as UC_VARIANTES
+}
+
+rectangle "Affectation des commandes" as AFFECT {
+  usecase "Attribuer une commande à un livreur" as UC_ATTRIB
+  usecase "Réattribuer après un échec de livraison" as UC_REATTRIB
+  usecase "Retirer l'attribution" as UC_RETRAIT
+}
+
+rectangle "Gestion des livreurs" as LIV {
+  usecase "Créer ou modifier un livreur" as UC_LIV_EDIT
+  usecase "Activer ou désactiver un livreur" as UC_LIV_TOGGLE
+  usecase "Supprimer un livreur" as UC_LIV_SUP
+}
+
+rectangle "Relation client et paramétrage" as REL {
+  usecase "Répondre à un avis" as UC_REPONSE
+  usecase "Gérer les abonnés à la newsletter" as UC_NEWS
+  usecase "Administrer les modèles (Django Admin)" as UC_DJANGO
+}
+
+rectangle "Système" as SYS {
+  usecase "Diffuser la commande en temps réel (WebSocket)" as UC_WS
+  usecase "Envoyer un SMS au livreur (WhatsApp)" as UC_WA
+  usecase "Mettre à jour la disponibilité du livreur" as UC_DISPO
+  usecase "Remettre le statut à En attente" as UC_REINIT
+  usecase "Envoyer un email (SMTP Gmail)" as UC_MAIL
+  usecase "Journaliser l'événement" as UC_LOG
+}
+
+' --- Relations ---
+A -- UC_DASH
+A -- UC_VENTES
+A -- UC_CMD
+A -- UC_ART_EDIT
+A -- UC_ART_VIS
+A -- UC_VARIANTES
+A -- UC_ATTRIB
+A -- UC_REATTRIB
+A -- UC_RETRAIT
+A -- UC_LIV_EDIT
+A -- UC_LIV_TOGGLE
+A -- UC_LIV_SUP
+A -- UC_REPONSE
+A -- UC_NEWS
+A -- UC_DJANGO
+
+' --- include / extend ---
+UC_ATTRIB ..> UC_WS : <<include>>
+UC_ATTRIB ..> UC_WA : <<include>>
+UC_ATTRIB ..> UC_DISPO : <<include>>
+UC_ATTRIB ..> UC_LOG : <<include>>
+UC_REATTRIB ..> UC_ATTRIB : <<extend>>
+UC_REATTRIB ..> UC_REINIT : <<include>>
+UC_RETRAIT ..> UC_DISPO : <<include>>
+UC_LIV_TOGGLE ..> UC_DISPO : <<extend>>
+UC_LIV_SUP ..> UC_DISPO : <<include>>
+UC_ART_EDIT ..> UC_VARIANTES : <<include>>
+UC_REPONSE ..> UC_MAIL : <<include>>
+UC_NEWS ..> UC_MAIL : <<include>>
+
+note bottom of UC_ATTRIB
+  **Regle :** seul un livreur actif
+  et disponible peut etre choisi.
+end note
+
+@enduml

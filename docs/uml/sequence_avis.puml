@@ -1,5 +1,5 @@
 @startuml
-' Ghalisam Boutique - Parcours d'un avis client et réponse du vendeur
+' Ghalisam - Parcours d'un avis client et réponse du vendeur
 ' Source : Articles/views.py::add_review(), user_has_purchased(), edit_review(), delete_review(),
 '           Articles/admin.py::ReviewAdmin, Utilisateurs/views.py::profil()
 

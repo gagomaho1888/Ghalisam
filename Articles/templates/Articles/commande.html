@@ -2,7 +2,7 @@
 {% load static %}
 {% load article_extras %}
 
-{% block title %}Panier / Commande - Ghalisam Boutique{% endblock %}
+{% block title %}Panier / Commande - Ghalisam{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/leaflet.css' %}">
@@ -224,7 +224,7 @@
     function initCarte() {
         if (typeof L === 'undefined' || map) return;
         map = L.map('map').setView([SHOP.lat, SHOP.lng], 6);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, referrerPolicy: 'origin', attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
         L.marker([SHOP.lat, SHOP.lng]).addTo(map).bindPopup('MonShop - Abidjan');
     }
     if (document.readyState === 'complete') initCarte();

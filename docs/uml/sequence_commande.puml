@@ -1,5 +1,5 @@
 @startuml
-' Ghalisam Boutique - Passation de commande (checkout)
+' Ghalisam - Passation de commande (checkout)
 ' Source : Articles/views.py::commande(), Articles/cart.py, Utilisateurs/models.py::Commande
 
 title Passation de commande (Client connecté)

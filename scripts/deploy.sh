@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Script de déploiement pour Ghalisam Boutique
+# Script de déploiement pour Ghalisam
 # Usage: bash scripts/deploy.sh
 set -euo pipefail
 
 APP_DIR="/path/to/ecommerce"
 ENV_FILE="$APP_DIR/.env"
 
-echo "=== Déploiement Ghalisam Boutique ==="
+echo "=== Déploiement Ghalisam ==="
 
 # 1. Charger les variables d'environnement
 if [ -f "$ENV_FILE" ]; then

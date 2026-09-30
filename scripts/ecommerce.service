@@ -1,5 +1,5 @@
 [Unit]
-Description=Ghalisam Boutique (Daphne)
+Description=Ghalisam (Daphne)
 After=network.target postgresql.service redis.service
 
 [Service]

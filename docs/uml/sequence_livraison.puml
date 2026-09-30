@@ -1,5 +1,5 @@
 @startuml
-' Ghalisam Boutique - Suivi de livraison et mise à jour du stock
+' Ghalisam - Suivi de livraison et mise à jour du stock
 ' Source : Utilisateurs/livreur_views.py::livreur_update_status(), _decrementer_stock(), _envoyer_email_livraison()
 
 title Mise à jour du statut d'une commande (Livreur) et décrémentation du stock

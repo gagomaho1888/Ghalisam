@@ -26,8 +26,8 @@ def _envoyer_email_livraison(commande):
             'site_url': f'{settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else "http://127.0.0.1:8000"}',
         })
         send_mail(
-            subject='Votre commande a été livrée - Ghalisam Boutique',
-            message=f"Bonjour {prenom},\n\nVotre commande #{commande.ticket} a été livrée avec succès. Merci pour votre confiance !\n\nN'hésitez pas à commenter les articles reçus.\n\nGhalisam Boutique",
+            subject='Votre commande a été livrée - Ghalisam',
+            message=f"Bonjour {prenom},\n\nVotre commande #{commande.ticket} a été livrée avec succès. Merci pour votre confiance !\n\nN'hésitez pas à commenter les articles reçus.\n\nGhalisam",
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[commande.user.email],
             html_message=html_message,
@@ -50,12 +50,12 @@ def _signaler_echec_livraison(commande):
     try:
         prenom = destinataire.first_name or destinataire.username
         send_mail(
-            subject='Livraison reportée - Ghalisam Boutique',
+            subject='Livraison reportée - Ghalisam',
             message=(
                 f"Bonjour {prenom},\n\n"
                 f"Nous n'avons pas pu vous livrer la commande #{commande.ticket}.\n"
                 "Un nouveau livreur vous contactera rapidement pour convenir d'un nouvel essai.\n\n"
-                "Merci de votre compréhension.\n\nGhalisam Boutique"
+                "Merci de votre compréhension.\n\nGhalisam"
             ),
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[destinataire.email],

@@ -1,9 +1,9 @@
 @startuml
-' Diagramme de classes - Ghalisam Boutique
+' Diagramme de classes - Ghalisam
 ' Source : Articles/models.py, Utilisateurs/models.py, dbfiles/models.py, Articles/cart.py
 ' Framework : Django 5.2 + Channels (ASGI), PostgreSQL
 
-title Diagramme de classes - Ghalisam Boutique (Django)
+title Diagramme de classes - Ghalisam (Django)
 
 skinparam classAttributeIconSize 0
 skinparam shadowing false

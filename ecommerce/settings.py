@@ -67,7 +67,7 @@ CONTENT_SECURITY_POLICY = {
     "script-src": "'self' __NONCE__",
     "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src": "'self' data: https://fonts.gstatic.com",
-    "img-src": "'self' data: https://via.placeholder.com https://*.tile.openstreetmap.org https://res.cloudinary.com",
+    "img-src": "'self' data: https://via.placeholder.com https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://res.cloudinary.com",
     "connect-src": "'self' ws: wss: https://res.cloudinary.com",
     "object-src": "'none'",
     "base-uri": "'self'",
