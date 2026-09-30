@@ -285,10 +285,20 @@ USE_TZ = True
 # Email – Gmail SMTP
 # ---------------------------------------------------------------------------
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+# En développement, le backend SMTP Gmail est souvent inaccessible (pas de réseau,
+# pare-feu, identifiants absents) : le formulaire de contact levait alors une
+# exception non gérée et renvoyait une erreur 500. Le backend console permet de
+# tester le formulaire localement sans dépendre d'un serveur SMTP.
+# Surcharger avec EMAIL_BACKEND pour forcer un backend précis.
+if env_str('EMAIL_BACKEND'):
+    EMAIL_BACKEND = env_str('EMAIL_BACKEND')
+elif DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env_str('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = env_int('EMAIL_PORT', 587)
+EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', True)
 EMAIL_HOST_USER = env_str('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env_str('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

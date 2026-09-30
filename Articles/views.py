@@ -667,14 +667,28 @@ def contact(request):
             fullname = _clean(fullname)[:200]
             message = message[:5000]
 
-            send_mail(
-                subject=f"[Contact] {label} - {fullname}",
-                message=f"Nom : {fullname}\nEmail : {_clean(email)}\nSujet : {label}\n\n{message}",
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[settings.EMAIL_HOST_USER],
-                fail_silently=False,
-            )
-            sent = True
+            try:
+                send_mail(
+                    subject=f"[Contact] {label} - {fullname}",
+                    message=f"Nom : {fullname}\nEmail : {_clean(email)}\nSujet : {label}\n\n{message}",
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[settings.EMAIL_HOST_USER],
+                    fail_silently=False,
+                )
+            except Exception:
+                # SMTP indisponible (réseau, identifiants, quota) : ne pas renvoyer
+                # une 500 qui fuite la trace, mais prévenir l'utilisateur. Le détail
+                # technique reste dans les logs serveur.
+                logger.exception("Envoi du message de contact impossible")
+                error = (
+                    "Le message n'a pas pu être envoyé pour le moment. "
+                    "Veuillez réessayer plus tard."
+                )
+            else:
+                sent = True
+                # Purge le rate-limit pour ne pas pénaliser l'utilisateur qui a
+                # réussi à envoyer.
+                _cache.delete(rl_key)
 
     return render(request, "Articles/contact.html", {"sent": sent, "error": error})
 
