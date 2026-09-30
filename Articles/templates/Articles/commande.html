@@ -151,16 +151,21 @@
 
     function getEl(id) { return document.getElementById(id); }
 
+    // Formatage identique au filtre template price_fr (separateur de milliers = point)
+    function fmt(n) {
+        return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
     function afficherFrais(dist, montant) {
-        if (total >= 50000) montant = 0;
-        var libelle = montant > 0 ? montant.toLocaleString() + ' FCFA' : 'Offert';
+        if (total > 50000) montant = 0;
+        var libelle = montant > 0 ? fmt(montant) + ' FCFA' : 'Offert';
         var el;
         getEl('distanceText').textContent = dist ? dist.toFixed(1) + ' km' : '—';
         getEl('fraisText').textContent = libelle;
         el = getEl('livraisonMontant');
         if (el) el.textContent = libelle;
         el = getEl('totalAvecLivraison');
-        if (el) el.textContent = total.toLocaleString() + ' FCFA';
+        if (el) el.textContent = fmt(total + montant) + ' FCFA';
     }
 
     function calculerDistance(lat, lon) {
